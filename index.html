@@ -75,11 +75,11 @@ const { useState, useEffect, useRef } = React;
 
 // ── Data ──────────────────────────────────────────────────
 const QUOTES = [
-  { ja: "お前が落ちるのを俺が楽しみにしているのと同じくらい…自分が落ちることも俺は楽しみにしている。", en: "I enjoyed your fall just as much as I'm looking forward to my own." },
-  { ja: "僕ちゃん…怖い？…うれしいな♥", en: "Are you scared, little one? ...How delightful." },
-  { ja: "死人には名乗っても意味がない。", en: "There's no point in introducing myself to a dead man." },
-  { ja: "強さとはなんだ？弱さとはなんだ？それはどうでもいい。俺が楽しければいい。", en: "What is strength? What is weakness? Those don't matter. As long as I'm entertained." },
-  { ja: "拍手、拍手、拍手！僕の舞台は終わらない♦", en: "Clap, clap, clap! My stage never ends." },
+  { ja: "キミの敗因は容量（メモリ）のムダ使い♥", en: "Your downfall was the waste of your memory capacity." },
+  { ja: "今のキミはボクに生かされている。キミがもっと殺しがいのある使い手に育つまで、キミはずっとボクに生かされているのだよ♠", en: "Right now, you are kept alive by me. Until you grow into a fighter worth killing, you will always owe your life to me." },
+  { ja: "無駄な努力、御苦労様♠", en: "Wasted effort. Thanks for the hard work." },
+  { ja: "ちなみにボクは変化系♦ 気まぐれでウソつき♠", en: "By the way, I'm a Transmuter. Whimsical and a liar." },
+  { ja: "やっぱり便利…♥ ボクの"薄っぺらな嘘（ドッキリテクスチャー）"♥♥", en: "So convenient after all... My 'Texture Surprise'." },
 ];
 
 const STATS = [
@@ -92,29 +92,30 @@ const STATS = [
 
 const ABILITIES = [
   {
-    name: "バンジーガム",
+    name: "伸縮自在の愛（バンジーガム）",
     type: "変化系",
-    desc: "自身のオーラをゴムとガムの性質に変化させる能力。自在に伸縮・付着が可能で、攻防一体の万能能力。",
+    desc: "自身のオーラにゴムとガム両方の性質を持たせる変化系能力。伸縮自在に伸び縮みし、あらゆるものに付着させることができる。攻防一体の万能能力で、ヒソカの戦闘スタイルの核。",
     color: "from-red-700 to-red-900",
     icon: "♦"
   },
   {
-    name: "テクスチャーサプライズ",
-    type: "具現化系",
-    desc: "紙や薄い素材に任意の絵や模様を描き、それを具現化する能力。偽装・トラップとして活用する。",
+    name: "薄っぺらな嘘（ドッキリテクスチャー）",
+    type: "変化系",
+    desc: "オーラを変化させ、薄い物体の表面にあらゆる質感・模様を再現する能力。幻影旅団の蜘蛛の刺青を偽装したり、切断された腕を繋がっているように見せかけるなど、欺瞞に特化した能力。",
     color: "from-yellow-700 to-yellow-900",
     icon: "♠"
   },
 ];
 
 const PROFILE = [
-  { label: "本名", value: "ヒソカ・モロウ" },
-  { label: "所属", value: "元幻影旅団（No.4）" },
+  { label: "本名", value: "ヒソカ＝モロウ" },
+  { label: "所属", value: "元幻影旅団 No.4（偽装入団）" },
   { label: "念の系統", value: "変化系" },
+  { label: "誕生日", value: "6月6日" },
   { label: "血液型", value: "B型" },
   { label: "身長", value: "187 cm" },
   { label: "体重", value: "91 kg" },
-  { label: "職業", value: "マジシャン / 殺し屋" },
+  { label: "職業", value: "奇術師" },
   { label: "出身", value: "不明" },
 ];
 
@@ -232,11 +233,11 @@ function App() {
           <h1 className="text-6xl md:text-8xl font-black mb-4 leading-none tracking-tight">
             <span className="gradient-text">HISOKA</span>
           </h1>
-          <p className="text-2xl text-gray-400 mb-2 font-light tracking-widest">ヒソカ・モロウ</p>
+          <p className="text-2xl text-gray-400 mb-2 font-light tracking-widest">ヒソカ＝モロウ</p>
           <p className="text-sm text-gray-600 tracking-widest">MOROW</p>
 
           <div className="flex justify-center gap-3 mt-8 flex-wrap">
-            {['マジシャン', '変化系', '元No.4', 'A級賞金首'].map((tag,i) => (
+            {['奇術師', '変化系', '元No.4', '戦闘狂'].map((tag,i) => (
               <span key={i} className="px-3 py-1 rounded-full text-xs border"
                 style={{borderColor:'rgba(192,57,43,0.4)', color:'#ef9e9e', background:'rgba(192,57,43,0.08)'}}>
                 {tag}
@@ -330,7 +331,7 @@ function App() {
               style={{background:'linear-gradient(135deg, rgba(212,160,23,0.06), rgba(192,57,43,0.06))'}}>
               <p className="text-4xl mb-3">♦</p>
               <p className="text-sm text-gray-500 leading-relaxed">
-                「バンジーガム」には「ゴムとガム」の性質がある。<br/>
+                「伸縮自在の愛（バンジーガム）」にはゴムとガム両方の性質がある♠<br/>
                 <span className="text-gray-300 italic">— ヒソカ</span>
               </p>
             </div>
