@@ -1,61 +1,402 @@
 <!DOCTYPE html>
-<html lang ="ja>
-
+<html lang="ja">
 <head>
-<meta charset ="UTF-8">
-<title>ヒソカ・モロウの紹介ページ</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ヒソカ・モロウ — 紹介ページ</title>
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          hisoka: { red: '#c0392b', gold: '#d4a017', dark: '#0a0a0a', card: '#141414' },
+        },
+        fontFamily: { jp: ['"Noto Serif JP"', 'serif'] },
+        animation: {
+          'fade-in': 'fadeIn 0.8s ease forwards',
+          'slide-up': 'slideUp 0.7s ease forwards',
+          'float': 'float 3s ease-in-out infinite',
+          'glow-pulse': 'glowPulse 2s ease-in-out infinite',
+        },
+        keyframes: {
+          fadeIn: { from: { opacity: 0 }, to: { opacity: 1 } },
+          slideUp: { from: { opacity: 0, transform: 'translateY(32px)' }, to: { opacity: 1, transform: 'translateY(0)' } },
+          float: { '0%,100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-10px)' } },
+          glowPulse: { '0%,100%': { boxShadow: '0 0 20px rgba(192,57,43,0.4)' }, '50%': { boxShadow: '0 0 40px rgba(192,57,43,0.8), 0 0 80px rgba(192,57,43,0.3)' } },
+        },
+      }
+    }
+  }
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;700;900&display=swap" rel="stylesheet">
+<style>
+  body { background-color: #0a0a0a; }
+  .card-suit { font-family: serif; }
+  .gradient-text {
+    background: linear-gradient(135deg, #d4a017, #c0392b, #d4a017);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    background-size: 200% auto; animation: shimmer 3s linear infinite;
+  }
+  @keyframes shimmer { to { background-position: 200% center; } }
+  .hisoka-card {
+    background: linear-gradient(145deg, #1a1a1a, #141414);
+    border: 1px solid rgba(212,160,23,0.2);
+    transition: all 0.3s ease;
+  }
+  .hisoka-card:hover {
+    border-color: rgba(212,160,23,0.6);
+    transform: translateY(-4px);
+    box-shadow: 0 10px 40px rgba(192,57,43,0.2);
+  }
+  .suit-bg {
+    position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 0;
+  }
+  .suit-item {
+    position: absolute; font-size: 1.5rem; opacity: 0.03; color: #d4a017;
+    animation: driftDown linear infinite;
+  }
+  @keyframes driftDown { from { transform: translateY(-80px) rotate(0deg); } to { transform: translateY(110vh) rotate(360deg); } }
+  .ability-bar { background: linear-gradient(90deg, #c0392b, #d4a017); }
+  .progress-track { background: rgba(255,255,255,0.08); border-radius: 9999px; overflow: hidden; }
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: #0a0a0a; }
+  ::-webkit-scrollbar-thumb { background: #c0392b; border-radius: 2px; }
+</style>
 </head>
+<body>
+<div id="root"></div>
 
-<boby>
-                      <a href ="http://www.yahoo.co.jp">Yahoo Japan</a>
-   <a href ="./index2.html">./index2.html</a>
-                         <a href ="index2.html">index2.html</a>
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
 
-   <a href ="./company/index.html">./company/index.html</a>"
-   <a href ="./company/about/index.html">./company/about/index.html</a>"
-   <a href ="../access///index.html">../access/index.html</a>"
-   リンクの作成(wwwフォルダ)
-   <img src="./image/device.jpg">
-   <img src="./image/device2.jpg">
-   <img src="./image/device3.jpg">
+// ── Data ──────────────────────────────────────────────────
+const QUOTES = [
+  { ja: "お前が落ちるのを俺が楽しみにしているのと同じくらい…自分が落ちることも俺は楽しみにしている。", en: "I enjoyed your fall just as much as I'm looking forward to my own." },
+  { ja: "僕ちゃん…怖い？…うれしいな♥", en: "Are you scared, little one? ...How delightful." },
+  { ja: "死人には名乗っても意味がない。", en: "There's no point in introducing myself to a dead man." },
+  { ja: "強さとはなんだ？弱さとはなんだ？それはどうでもいい。俺が楽しければいい。", en: "What is strength? What is weakness? Those don't matter. As long as I'm entertained." },
+  { ja: "拍手、拍手、拍手！僕の舞台は終わらない♦", en: "Clap, clap, clap! My stage never ends." },
+];
 
-   <p>簡易フォーム</p>
+const STATS = [
+  { label: "念能力", value: 97, icon: "♦" },
+  { label: "戦闘力", value: 99, icon: "♠" },
+  { label: "知性", value: 85, icon: "♥" },
+  { label: "スピード", value: 94, icon: "♣" },
+  { label: "残虐性", value: 96, icon: "♦" },
+];
 
-   <form method="XXX" action="XXX">
-     <p>名前<input type ="text" name="XXX" size ="100" value=死人には名乗っても意味がない🍀></p>
-     <p>ニックネーム<input type ="text" name="XXX" size ="100" placeholder ="ネタバレが過ぎるな 後悔するなよエセマジシャン"></p>
-     <p>メールアドレス<input type ="text" name="XXX"size="100" placeholder="能力はバラしても構わない"></p>
-     <p>URL<input type ="text" name="XXX" value="http://"></p>
-     <p>パスワード<input type ="text" name="XXX" size="100" value="パスワードはお死枚 死神クイズに回答者はいらない・・・☠"></p>
-     <p>写真<input type ="file" name="XXX" size="100" value="パスワードはお死枚 死神クイズに回答者はいらない・・・☠"></p>
-     <p>これから君に渡すのは何枚でしょう？
-        <lavel><input type ="radio" name="XXX" size="100" value="パスワードはお死枚 死神クイズに回答者はいらない・・・☠"></p>沈黙 それが 正しい答えなんだ</label>
-        <lavel><input type ="radio" name="XXX" size="100" value="パスワードはお死枚 死神クイズに回答者はいらない・・・☠"></p>お死枚 チャンチャン♥</label>
+const ABILITIES = [
+  {
+    name: "バンジーガム",
+    type: "変化系",
+    desc: "自身のオーラをゴムとガムの性質に変化させる能力。自在に伸縮・付着が可能で、攻防一体の万能能力。",
+    color: "from-red-700 to-red-900",
+    icon: "♦"
+  },
+  {
+    name: "テクスチャーサプライズ",
+    type: "具現化系",
+    desc: "紙や薄い素材に任意の絵や模様を描き、それを具現化する能力。偽装・トラップとして活用する。",
+    color: "from-yellow-700 to-yellow-900",
+    icon: "♠"
+  },
+];
 
-     </p>
-     <p>答えは・・・
-       <lavel><input type="checkbox" name="XXX" value="XXX">トランプなので実質1枚</label>
-       <lavel><input type="checkbox" name="XXX" value="XXX">マジレスすると1枚なんだよな</label>
-       <lavel><input type="checkbox" name="XXX" value="XXX">お死枚 死神クイズに回答者はいらない</label>
-       <lavel><input type="checkbox" name="XXX" value="XXX">好きな方で逝けや</label>
-       <lavel><input type="checkbox" name="XXX" value="XXX">答えが 22枚より多かろうが全部‼撃ち落としてやる!!!</label>
-       </p>
+const PROFILE = [
+  { label: "本名", value: "ヒソカ・モロウ" },
+  { label: "所属", value: "元幻影旅団（No.4）" },
+  { label: "念の系統", value: "変化系" },
+  { label: "血液型", value: "B型" },
+  { label: "身長", value: "187 cm" },
+  { label: "体重", value: "91 kg" },
+  { label: "職業", value: "マジシャン / 殺し屋" },
+  { label: "出身", value: "不明" },
+];
 
-       <p>お前らなぁ
-         <textarea name="XXX" rows="10" cols ="40" placeholder="お前らはキルア様を追え‼"></textarea>
-       </p>
-       <p>余計な体力は任務に取っておけ
-         <select name="XXX">
-           <option value="XXX">お前は俺が遊んでやる</option>
-           <option value="XXX">お前は俺が遊んでやる</option>
-           <option value="XXX">お前は俺が遊んでやる</option>
-           <option value="XXX">お前は俺が遊んでやる</option>
+// ── Components ────────────────────────────────────────────
+function SuitBackground() {
+  const suits = ['♠','♥','♦','♣'];
+  const items = Array.from({length:18},(_,i) => ({
+    suit: suits[i%4],
+    left: `${5 + i*5.5}%`,
+    delay: `${(i * 1.1).toFixed(1)}s`,
+    duration: `${10 + (i % 7) * 2}s`,
+    size: `${1 + (i % 3) * 0.5}rem`,
+  }));
+  return (
+    <div className="suit-bg">
+      {items.map((item, i) => (
+        <span key={i} className="suit-item" style={{
+          left: item.left, top: '-80px', animationDelay: item.delay,
+          animationDuration: item.duration, fontSize: item.size,
+          color: i % 2 === 0 ? '#d4a017' : '#c0392b',
+        }}>{item.suit}</span>
+      ))}
+    </div>
+  );
+}
 
-         </select></p>
-           <p><input type="submit" value ="お前ら真面目に対応してんじゃねぇよ よけろよけろ"></p>
+function StatBar({ label, value, icon, delay }) {
+  const [width, setWidth] = useState(0);
+  useEffect(() => {
+    setTimeout(() => setWidth(value), delay);
+  }, []);
+  return (
+    <div className="mb-4">
+      <div className="flex justify-between items-center mb-1">
+        <span className="text-sm text-gray-300 font-jp">{icon} {label}</span>
+        <span className="text-sm font-bold" style={{color:'#d4a017'}}>{value}</span>
+      </div>
+      <div className="progress-track h-2">
+        <div className="ability-bar h-2 rounded-full transition-all duration-1000 ease-out"
+          style={{width: `${width}%`}} />
+      </div>
+    </div>
+  );
+}
 
-   </form>
+function QuoteCarousel() {
+  const [idx, setIdx] = useState(0);
+  const [visible, setVisible] = useState(true);
+  const next = () => {
+    setVisible(false);
+    setTimeout(() => { setIdx(i => (i+1) % QUOTES.length); setVisible(true); }, 300);
+  };
+  const prev = () => {
+    setVisible(false);
+    setTimeout(() => { setIdx(i => (i-1+QUOTES.length) % QUOTES.length); setVisible(true); }, 300);
+  };
+  return (
+    <div className="hisoka-card rounded-2xl p-8 text-center relative overflow-hidden">
+      <div className="absolute top-4 left-6 text-6xl opacity-10 font-serif" style={{color:'#d4a017'}}>"</div>
+      <div className="absolute bottom-4 right-6 text-6xl opacity-10 font-serif rotate-180" style={{color:'#d4a017'}}>"</div>
+      <div className="transition-opacity duration-300 relative z-10" style={{opacity: visible ? 1 : 0}}>
+        <p className="text-lg leading-relaxed text-gray-100 font-jp mb-4">{QUOTES[idx].ja}</p>
+        <p className="text-sm text-gray-500 italic">{QUOTES[idx].en}</p>
+      </div>
+      <div className="flex justify-center gap-4 mt-6">
+        <button onClick={prev}
+          className="w-10 h-10 rounded-full border border-yellow-700 text-yellow-600 hover:bg-yellow-900/30 transition-all flex items-center justify-center">
+          ‹
+        </button>
+        <div className="flex gap-1 items-center">
+          {QUOTES.map((_,i) => (
+            <button key={i} onClick={() => setIdx(i)}
+              className={`w-2 h-2 rounded-full transition-all ${i===idx ? 'bg-red-600 w-4' : 'bg-gray-600'}`} />
+          ))}
+        </div>
+        <button onClick={next}
+          className="w-10 h-10 rounded-full border border-yellow-700 text-yellow-600 hover:bg-yellow-900/30 transition-all flex items-center justify-center">
+          ›
+        </button>
+      </div>
+    </div>
+  );
+}
 
-</boby>
+function App() {
+  const [activeTab, setActiveTab] = useState('profile');
+  const tabs = [
+    { id: 'profile', label: '♠ プロフィール' },
+    { id: 'abilities', label: '♦ 能力' },
+    { id: 'stats', label: '♥ ステータス' },
+    { id: 'quotes', label: '♣ 名言' },
+  ];
 
+  return (
+    <div className="min-h-screen text-white font-jp relative" style={{background:'#0a0a0a'}}>
+      <SuitBackground />
+
+      {/* Hero */}
+      <div className="relative z-10 overflow-hidden" style={{background:'linear-gradient(180deg, #1a0505 0%, #0a0a0a 100%)'}}>
+        <div className="absolute inset-0" style={{background:'radial-gradient(ellipse at 50% 0%, rgba(192,57,43,0.15) 0%, transparent 60%)'}} />
+        <div className="max-w-4xl mx-auto px-6 py-20 text-center relative">
+          {/* Suit decoration */}
+          <div className="flex justify-center gap-8 mb-8 text-2xl opacity-40">
+            {['♠','♦','♥','♣'].map((s,i) => (
+              <span key={i} style={{color: i%2===0 ? '#d4a017' : '#c0392b', animationDelay:`${i*0.2}s`}}
+                className="animate-float inline-block">{s}</span>
+            ))}
+          </div>
+
+          <div className="inline-block mb-6 px-4 py-1 rounded-full border text-xs tracking-widest"
+            style={{borderColor:'rgba(212,160,23,0.3)', color:'#d4a017', background:'rgba(212,160,23,0.05)'}}>
+            HUNTER × HUNTER
+          </div>
+
+          <h1 className="text-6xl md:text-8xl font-black mb-4 leading-none tracking-tight">
+            <span className="gradient-text">HISOKA</span>
+          </h1>
+          <p className="text-2xl text-gray-400 mb-2 font-light tracking-widest">ヒソカ・モロウ</p>
+          <p className="text-sm text-gray-600 tracking-widest">MOROW</p>
+
+          <div className="flex justify-center gap-3 mt-8 flex-wrap">
+            {['マジシャン', '変化系', '元No.4', 'A級賞金首'].map((tag,i) => (
+              <span key={i} className="px-3 py-1 rounded-full text-xs border"
+                style={{borderColor:'rgba(192,57,43,0.4)', color:'#ef9e9e', background:'rgba(192,57,43,0.08)'}}>
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="relative z-10 sticky top-0"
+        style={{background:'rgba(10,10,10,0.95)', backdropFilter:'blur(12px)', borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="flex gap-0 overflow-x-auto">
+            {tabs.map(tab => (
+              <button key={tab.id} onClick={() => setActiveTab(tab.id)}
+                className={`px-5 py-4 text-sm font-bold whitespace-nowrap transition-all border-b-2 ${
+                  activeTab === tab.id
+                    ? 'border-red-600 text-red-400'
+                    : 'border-transparent text-gray-500 hover:text-gray-300'
+                }`}>
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="relative z-10 max-w-4xl mx-auto px-6 py-12">
+
+        {/* Profile */}
+        {activeTab === 'profile' && (
+          <div className="animate-fade-in grid md:grid-cols-2 gap-6">
+            <div className="hisoka-card rounded-2xl p-6">
+              <h2 className="text-lg font-bold mb-6 flex items-center gap-2" style={{color:'#d4a017'}}>
+                <span>♠</span> 基本プロフィール
+              </h2>
+              <div className="space-y-3">
+                {PROFILE.map(({ label, value }) => (
+                  <div key={label} className="flex justify-between items-center py-2"
+                    style={{borderBottom:'1px solid rgba(255,255,255,0.05)'}}>
+                    <span className="text-xs text-gray-500 tracking-wider">{label}</span>
+                    <span className="text-sm text-gray-200 font-medium">{value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-5">
+              <div className="hisoka-card rounded-2xl p-6">
+                <h2 className="text-lg font-bold mb-4 flex items-center gap-2" style={{color:'#d4a017'}}>
+                  <span>♦</span> キャラクター概要
+                </h2>
+                <p className="text-sm text-gray-400 leading-relaxed">
+                  ヒソカ・モロウは、『HUNTER×HUNTER』に登場するキャラクター。
+                  マジシャンを自称し、戦闘に異常なまでの快楽を見出す謎多き男。
+                  強者との闘いを極度に好み、潜在能力の高い者を「未熟な果実」として育てる習性を持つ。
+                </p>
+              </div>
+
+              <div className="hisoka-card rounded-2xl p-6"
+                style={{background:'linear-gradient(135deg, rgba(192,57,43,0.1), rgba(212,160,23,0.05))'}}>
+                <h2 className="text-sm font-bold mb-3 text-gray-400 tracking-widest">HUNTER EXAM 第四次試験</h2>
+                <p className="text-3xl font-black gradient-text">通過</p>
+                <p className="text-xs text-gray-600 mt-1">単独実力突破</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Abilities */}
+        {activeTab === 'abilities' && (
+          <div className="animate-fade-in space-y-6">
+            {ABILITIES.map((ab, i) => (
+              <div key={i} className="hisoka-card rounded-2xl overflow-hidden">
+                <div className={`bg-gradient-to-r ${ab.color} p-4 flex items-center gap-3`}>
+                  <span className="text-2xl">{ab.icon}</span>
+                  <div>
+                    <h3 className="text-xl font-black">{ab.name}</h3>
+                    <span className="text-xs opacity-75 tracking-wider">{ab.type}</span>
+                  </div>
+                </div>
+                <div className="p-6">
+                  <p className="text-gray-300 text-sm leading-relaxed">{ab.desc}</p>
+                </div>
+              </div>
+            ))}
+
+            <div className="hisoka-card rounded-2xl p-6 text-center"
+              style={{background:'linear-gradient(135deg, rgba(212,160,23,0.06), rgba(192,57,43,0.06))'}}>
+              <p className="text-4xl mb-3">♦</p>
+              <p className="text-sm text-gray-500 leading-relaxed">
+                「バンジーガム」には「ゴムとガム」の性質がある。<br/>
+                <span className="text-gray-300 italic">— ヒソカ</span>
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Stats */}
+        {activeTab === 'stats' && (
+          <div className="animate-fade-in grid md:grid-cols-2 gap-6">
+            <div className="hisoka-card rounded-2xl p-6">
+              <h2 className="text-lg font-bold mb-6 flex items-center gap-2" style={{color:'#d4a017'}}>
+                <span>♥</span> 戦闘ステータス
+              </h2>
+              {STATS.map((s, i) => (
+                <StatBar key={s.label} {...s} delay={i * 150} />
+              ))}
+            </div>
+
+            <div className="space-y-4">
+              {[
+                { label: '殺傷能力', grade: 'S', desc: '幻影旅団を単独で壊滅させうる実力', color: '#c0392b' },
+                { label: '念の習熟度', grade: 'S+', desc: 'バンジーガムで変化系トップクラス', color: '#d4a017' },
+                { label: '格闘技術', grade: 'S', desc: '近接・遠距離どちらも超一流', color: '#c0392b' },
+                { label: '精神的脅威度', grade: 'EX', desc: '読めない行動原理で相手を翻弄', color: '#8b5cf6' },
+              ].map((item, i) => (
+                <div key={i} className="hisoka-card rounded-xl p-4 flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-xl flex items-center justify-center font-black text-lg flex-shrink-0"
+                    style={{background:`${item.color}22`, color:item.color, border:`1px solid ${item.color}44`}}>
+                    {item.grade}
+                  </div>
+                  <div>
+                    <p className="font-bold text-sm text-gray-200">{item.label}</p>
+                    <p className="text-xs text-gray-500 mt-0.5">{item.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Quotes */}
+        {activeTab === 'quotes' && (
+          <div className="animate-fade-in">
+            <QuoteCarousel />
+            <div className="mt-6 grid gap-4">
+              {QUOTES.map((q, i) => (
+                <div key={i} className="hisoka-card rounded-xl p-5">
+                  <p className="text-gray-200 text-sm leading-relaxed font-jp">{q.ja}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Footer */}
+      <footer className="relative z-10 text-center py-10 border-t" style={{borderColor:'rgba(255,255,255,0.05)'}}>
+        <p className="text-2xl mb-2">♠ ♦ ♥ ♣</p>
+        <p className="text-xs text-gray-700">HUNTER × HUNTER © Yoshihiro Togashi / Shueisha</p>
+        <p className="text-xs text-gray-800 mt-1">Fan-made tribute page</p>
+      </footer>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
 </html>
