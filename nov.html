@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ヒソカ・モロウ — 紹介ページ</title>
+<title>ノヴ — 紹介ページ</title>
 <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -13,7 +13,7 @@
     theme: {
       extend: {
         colors: {
-          hisoka: { red: '#c0392b', gold: '#d4a017', dark: '#0a0a0a', card: '#141414' },
+          knov: { purple: '#6c3483', indigo: '#4a69bd', dark: '#0a0a0a', card: '#141414' },
         },
         fontFamily: { jp: ['"Noto Serif JP"', 'serif'] },
         animation: {
@@ -26,7 +26,7 @@
           fadeIn: { from: { opacity: 0 }, to: { opacity: 1 } },
           slideUp: { from: { opacity: 0, transform: 'translateY(32px)' }, to: { opacity: 1, transform: 'translateY(0)' } },
           float: { '0%,100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-10px)' } },
-          glowPulse: { '0%,100%': { boxShadow: '0 0 20px rgba(192,57,43,0.4)' }, '50%': { boxShadow: '0 0 40px rgba(192,57,43,0.8), 0 0 80px rgba(192,57,43,0.3)' } },
+          glowPulse: { '0%,100%': { boxShadow: '0 0 20px rgba(108,52,131,0.4)' }, '50%': { boxShadow: '0 0 40px rgba(108,52,131,0.8), 0 0 80px rgba(108,52,131,0.3)' } },
         },
       }
     }
@@ -35,36 +35,35 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;700;900&display=swap" rel="stylesheet">
 <style>
   body { background-color: #0a0a0a; }
-  .card-suit { font-family: serif; }
   .gradient-text {
-    background: linear-gradient(135deg, #d4a017, #c0392b, #d4a017);
+    background: linear-gradient(135deg, #4a69bd, #6c3483, #4a69bd);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
     background-size: 200% auto; animation: shimmer 3s linear infinite;
   }
   @keyframes shimmer { to { background-position: 200% center; } }
-  .hisoka-card {
+  .knov-card {
     background: linear-gradient(145deg, #1a1a1a, #141414);
-    border: 1px solid rgba(212,160,23,0.2);
+    border: 1px solid rgba(74,105,189,0.2);
     transition: all 0.3s ease;
   }
-  .hisoka-card:hover {
-    border-color: rgba(212,160,23,0.6);
+  .knov-card:hover {
+    border-color: rgba(74,105,189,0.6);
     transform: translateY(-4px);
-    box-shadow: 0 10px 40px rgba(192,57,43,0.2);
+    box-shadow: 0 10px 40px rgba(108,52,131,0.2);
   }
-  .suit-bg {
+  .portal-bg {
     position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 0;
   }
-  .suit-item {
-    position: absolute; font-size: 1.5rem; opacity: 0.03; color: #d4a017;
+  .portal-item {
+    position: absolute; font-size: 1.5rem; opacity: 0.03; color: #4a69bd;
     animation: driftDown linear infinite;
   }
   @keyframes driftDown { from { transform: translateY(-80px) rotate(0deg); } to { transform: translateY(110vh) rotate(360deg); } }
-  .ability-bar { background: linear-gradient(90deg, #c0392b, #d4a017); }
+  .ability-bar { background: linear-gradient(90deg, #6c3483, #4a69bd); }
   .progress-track { background: rgba(255,255,255,0.08); border-radius: 9999px; overflow: hidden; }
   ::-webkit-scrollbar { width: 4px; }
   ::-webkit-scrollbar-track { background: #0a0a0a; }
-  ::-webkit-scrollbar-thumb { background: #c0392b; border-radius: 2px; }
+  ::-webkit-scrollbar-thumb { background: #6c3483; border-radius: 2px; }
 </style>
 </head>
 <body>
@@ -75,68 +74,68 @@ const { useState, useEffect, useRef } = React;
 
 // ── Data ──────────────────────────────────────────────────
 const QUOTES = [
-  { ja: "キミの敗因は容量（メモリ）のムダ使い♥", en: "Your downfall was the waste of your memory capacity." },
-  { ja: "今のキミはボクに生かされている。キミがもっと殺しがいのある使い手に育つまで、キミはずっとボクに生かされているのだよ♠", en: "Right now, you are kept alive by me. Until you grow into a fighter worth killing, you will always owe your life to me." },
-  { ja: "無駄な努力、御苦労様♠", en: "Wasted effort. Thanks for the hard work." },
-  { ja: "ちなみにボクは変化系♦ 気まぐれでウソつき♠", en: "By the way, I'm a Transmuter. Whimsical and a liar." },
-  { ja: "やっぱり便利…♥ ボクの『薄っぺらな嘘（ドッキリテクスチャー）』♥♥", en: "So convenient after all... My 'Texture Surprise'." },
+  { ja: "僕の4次元マンションに不可能はない", en: "Nothing is impossible in my Fourth-Dimensional Mansion." },
+  { ja: "…もう…無理だ…あんな化け物の傍には…いられない…", en: "...I can't do it anymore... I can't be near a monster like that..." },
+  { ja: "窓を開けるだけでいい…それだけで終わる", en: "I just need to open a window... That alone will end it." },
+  { ja: "作戦の要は僕の能力だ。失敗は許されない", en: "My ability is the key to this operation. Failure is not an option." },
+  { ja: "モラウ…後は頼む…", en: "Morel... I leave the rest to you..." },
 ];
 
 const STATS = [
-  { label: "念能力", value: 97, icon: "♦" },
-  { label: "戦闘力", value: 99, icon: "♠" },
-  { label: "知性", value: 85, icon: "♥" },
-  { label: "スピード", value: 94, icon: "♣" },
-  { label: "残虐性", value: 96, icon: "♦" },
+  { label: "念能力", value: 90, icon: "◇" },
+  { label: "知性", value: 95, icon: "◆" },
+  { label: "戦略性", value: 93, icon: "□" },
+  { label: "精神力", value: 45, icon: "■" },
+  { label: "サポート力", value: 98, icon: "◇" },
 ];
 
 const ABILITIES = [
   {
-    name: "伸縮自在の愛（バンジーガム）",
-    type: "変化系",
-    desc: "自身のオーラにゴムとガム両方の性質を持たせる変化系能力。伸縮自在に伸び縮みし、あらゆるものに付着させることができる。攻防一体の万能能力で、ヒソカの戦闘スタイルの核。",
-    color: "from-red-700 to-red-900",
-    icon: "♦"
+    name: "4次元マンション（ハイドアンドシーク）",
+    type: "具現化系",
+    desc: "異空間に最大32室の部屋を持つマンションを具現化する能力。各部屋にはマスターキーでのみ出入り可能。物資の保管、人員の移動、潜入作戦など戦略的に極めて有用。東ゴルトー共和国への侵入作戦において要となった。",
+    color: "from-purple-700 to-purple-900",
+    icon: "◆"
   },
   {
-    name: "薄っぺらな嘘（ドッキリテクスチャー）",
-    type: "変化系",
-    desc: "オーラを変化させ、薄い物体の表面にあらゆる質感・模様を再現する能力。幻影旅団の蜘蛛の刺青を偽装したり、切断された腕を繋がっているように見せかけるなど、欺瞞に特化した能力。",
-    color: "from-yellow-700 to-yellow-900",
-    icon: "♠"
+    name: "窓を開く者（スクリーム）",
+    type: "具現化系",
+    desc: "4次元マンションの応用技。対象を4次元空間の入口で切断する攻撃能力。窓の縁が次元の断層となり、触れたものを問答無用で切断する。防御不能の即死級攻撃だが、精神的に追い詰められた後は使用が困難になった。",
+    color: "from-indigo-700 to-indigo-900",
+    icon: "□"
   },
 ];
 
 const PROFILE = [
-  { label: "本名", value: "ヒソカ＝モロウ" },
-  { label: "所属", value: "元幻影旅団 No.4（偽装入団）" },
-  { label: "念の系統", value: "変化系" },
-  { label: "誕生日", value: "6月6日" },
-  { label: "血液型", value: "B型" },
-  { label: "身長", value: "187 cm" },
-  { label: "体重", value: "91 kg" },
-  { label: "職業", value: "奇術師" },
-  { label: "出身", value: "不明" },
+  { label: "本名", value: "ノヴ" },
+  { label: "職業", value: "ハンター" },
+  { label: "念の系統", value: "具現化系" },
+  { label: "所属", value: "討伐隊（キメラアント編）" },
+  { label: "師弟関係", value: "パーム＝シベリアの師匠" },
+  { label: "身長", value: "不明" },
+  { label: "体重", value: "不明" },
+  { label: "特徴", value: "眼鏡・スーツ姿の知的な風貌" },
+  { label: "髪", value: "黒髪（精神崩壊後は白髪）" },
 ];
 
 // ── Components ────────────────────────────────────────────
-function SuitBackground() {
-  const suits = ['♠','♥','♦','♣'];
+function PortalBackground() {
+  const symbols = ['◇','◆','□','■','△','▽'];
   const items = Array.from({length:18},(_,i) => ({
-    suit: suits[i%4],
+    symbol: symbols[i%6],
     left: `${5 + i*5.5}%`,
     delay: `${(i * 1.1).toFixed(1)}s`,
     duration: `${10 + (i % 7) * 2}s`,
     size: `${1 + (i % 3) * 0.5}rem`,
   }));
   return (
-    <div className="suit-bg">
+    <div className="portal-bg">
       {items.map((item, i) => (
-        <span key={i} className="suit-item" style={{
+        <span key={i} className="portal-item" style={{
           left: item.left, top: '-80px', animationDelay: item.delay,
           animationDuration: item.duration, fontSize: item.size,
-          color: i % 2 === 0 ? '#d4a017' : '#c0392b',
-        }}>{item.suit}</span>
+          color: i % 2 === 0 ? '#4a69bd' : '#6c3483',
+        }}>{item.symbol}</span>
       ))}
     </div>
   );
@@ -151,7 +150,7 @@ function StatBar({ label, value, icon, delay }) {
     <div className="mb-4">
       <div className="flex justify-between items-center mb-1">
         <span className="text-sm text-gray-300 font-jp">{icon} {label}</span>
-        <span className="text-sm font-bold" style={{color:'#d4a017'}}>{value}</span>
+        <span className="text-sm font-bold" style={{color:'#4a69bd'}}>{value}</span>
       </div>
       <div className="progress-track h-2">
         <div className="ability-bar h-2 rounded-full transition-all duration-1000 ease-out"
@@ -173,26 +172,26 @@ function QuoteCarousel() {
     setTimeout(() => { setIdx(i => (i-1+QUOTES.length) % QUOTES.length); setVisible(true); }, 300);
   };
   return (
-    <div className="hisoka-card rounded-2xl p-8 text-center relative overflow-hidden">
-      <div className="absolute top-4 left-6 text-6xl opacity-10 font-serif" style={{color:'#d4a017'}}>"</div>
-      <div className="absolute bottom-4 right-6 text-6xl opacity-10 font-serif rotate-180" style={{color:'#d4a017'}}>"</div>
+    <div className="knov-card rounded-2xl p-8 text-center relative overflow-hidden">
+      <div className="absolute top-4 left-6 text-6xl opacity-10 font-serif" style={{color:'#4a69bd'}}>"</div>
+      <div className="absolute bottom-4 right-6 text-6xl opacity-10 font-serif rotate-180" style={{color:'#4a69bd'}}>"</div>
       <div className="transition-opacity duration-300 relative z-10" style={{opacity: visible ? 1 : 0}}>
         <p className="text-lg leading-relaxed text-gray-100 font-jp mb-4">{QUOTES[idx].ja}</p>
         <p className="text-sm text-gray-500 italic">{QUOTES[idx].en}</p>
       </div>
       <div className="flex justify-center gap-4 mt-6">
         <button onClick={prev}
-          className="w-10 h-10 rounded-full border border-yellow-700 text-yellow-600 hover:bg-yellow-900/30 transition-all flex items-center justify-center">
+          className="w-10 h-10 rounded-full border border-indigo-700 text-indigo-400 hover:bg-indigo-900/30 transition-all flex items-center justify-center">
           ‹
         </button>
         <div className="flex gap-1 items-center">
           {QUOTES.map((_,i) => (
             <button key={i} onClick={() => setIdx(i)}
-              className={`w-2 h-2 rounded-full transition-all ${i===idx ? 'bg-red-600 w-4' : 'bg-gray-600'}`} />
+              className={`w-2 h-2 rounded-full transition-all ${i===idx ? 'bg-purple-600 w-4' : 'bg-gray-600'}`} />
           ))}
         </div>
         <button onClick={next}
-          className="w-10 h-10 rounded-full border border-yellow-700 text-yellow-600 hover:bg-yellow-900/30 transition-all flex items-center justify-center">
+          className="w-10 h-10 rounded-full border border-indigo-700 text-indigo-400 hover:bg-indigo-900/30 transition-all flex items-center justify-center">
           ›
         </button>
       </div>
@@ -203,50 +202,50 @@ function QuoteCarousel() {
 function App() {
   const [activeTab, setActiveTab] = useState('profile');
   const tabs = [
-    { id: 'profile', label: '♠ プロフィール' },
-    { id: 'abilities', label: '♦ 能力' },
-    { id: 'stats', label: '♥ ステータス' },
-    { id: 'quotes', label: '♣ 名言' },
+    { id: 'profile', label: '◆ プロフィール' },
+    { id: 'abilities', label: '□ 能力' },
+    { id: 'stats', label: '◇ ステータス' },
+    { id: 'quotes', label: '■ 名言' },
   ];
 
   return (
     <div className="min-h-screen text-white font-jp relative" style={{background:'#0a0a0a'}}>
-      <SuitBackground />
+      <PortalBackground />
 
       {/* Nav link */}
       <div className="relative z-10 px-6 pt-4">
-        <a href="nov.html" className="text-xs text-gray-600 hover:text-gray-400 transition-colors">
-          ノヴのページへ →
+        <a href="index.html" className="text-xs text-gray-600 hover:text-gray-400 transition-colors">
+          ← ヒソカのページへ
         </a>
       </div>
 
       {/* Hero */}
-      <div className="relative z-10 overflow-hidden" style={{background:'linear-gradient(180deg, #1a0505 0%, #0a0a0a 100%)'}}>
-        <div className="absolute inset-0" style={{background:'radial-gradient(ellipse at 50% 0%, rgba(192,57,43,0.15) 0%, transparent 60%)'}} />
+      <div className="relative z-10 overflow-hidden" style={{background:'linear-gradient(180deg, #0a0515 0%, #0a0a0a 100%)'}}>
+        <div className="absolute inset-0" style={{background:'radial-gradient(ellipse at 50% 0%, rgba(108,52,131,0.15) 0%, transparent 60%)'}} />
         <div className="max-w-4xl mx-auto px-6 py-20 text-center relative">
-          {/* Suit decoration */}
+          {/* Symbol decoration */}
           <div className="flex justify-center gap-8 mb-8 text-2xl opacity-40">
-            {['♠','♦','♥','♣'].map((s,i) => (
-              <span key={i} style={{color: i%2===0 ? '#d4a017' : '#c0392b', animationDelay:`${i*0.2}s`}}
+            {['◇','◆','□','■'].map((s,i) => (
+              <span key={i} style={{color: i%2===0 ? '#4a69bd' : '#6c3483', animationDelay:`${i*0.2}s`}}
                 className="animate-float inline-block">{s}</span>
             ))}
           </div>
 
           <div className="inline-block mb-6 px-4 py-1 rounded-full border text-xs tracking-widest"
-            style={{borderColor:'rgba(212,160,23,0.3)', color:'#d4a017', background:'rgba(212,160,23,0.05)'}}>
+            style={{borderColor:'rgba(74,105,189,0.3)', color:'#4a69bd', background:'rgba(74,105,189,0.05)'}}>
             HUNTER × HUNTER
           </div>
 
           <h1 className="text-6xl md:text-8xl font-black mb-4 leading-none tracking-tight">
-            <span className="gradient-text">HISOKA</span>
+            <span className="gradient-text">KNOV</span>
           </h1>
-          <p className="text-2xl text-gray-400 mb-2 font-light tracking-widest">ヒソカ＝モロウ</p>
-          <p className="text-sm text-gray-600 tracking-widest">MOROW</p>
+          <p className="text-2xl text-gray-400 mb-2 font-light tracking-widest">ノヴ</p>
+          <p className="text-sm text-gray-600 tracking-widest">HIDE AND SEEK</p>
 
           <div className="flex justify-center gap-3 mt-8 flex-wrap">
-            {['奇術師', '変化系', '元No.4', '戦闘狂'].map((tag,i) => (
+            {['ハンター', '具現化系', '討伐隊', '戦略家'].map((tag,i) => (
               <span key={i} className="px-3 py-1 rounded-full text-xs border"
-                style={{borderColor:'rgba(192,57,43,0.4)', color:'#ef9e9e', background:'rgba(192,57,43,0.08)'}}>
+                style={{borderColor:'rgba(108,52,131,0.4)', color:'#b39ddb', background:'rgba(108,52,131,0.08)'}}>
                 {tag}
               </span>
             ))}
@@ -263,7 +262,7 @@ function App() {
               <button key={tab.id} onClick={() => setActiveTab(tab.id)}
                 className={`px-5 py-4 text-sm font-bold whitespace-nowrap transition-all border-b-2 ${
                   activeTab === tab.id
-                    ? 'border-red-600 text-red-400'
+                    ? 'border-purple-600 text-purple-400'
                     : 'border-transparent text-gray-500 hover:text-gray-300'
                 }`}>
                 {tab.label}
@@ -279,9 +278,9 @@ function App() {
         {/* Profile */}
         {activeTab === 'profile' && (
           <div className="animate-fade-in grid md:grid-cols-2 gap-6">
-            <div className="hisoka-card rounded-2xl p-6">
-              <h2 className="text-lg font-bold mb-6 flex items-center gap-2" style={{color:'#d4a017'}}>
-                <span>♠</span> 基本プロフィール
+            <div className="knov-card rounded-2xl p-6">
+              <h2 className="text-lg font-bold mb-6 flex items-center gap-2" style={{color:'#4a69bd'}}>
+                <span>◆</span> 基本プロフィール
               </h2>
               <div className="space-y-3">
                 {PROFILE.map(({ label, value }) => (
@@ -295,22 +294,23 @@ function App() {
             </div>
 
             <div className="space-y-5">
-              <div className="hisoka-card rounded-2xl p-6">
-                <h2 className="text-lg font-bold mb-4 flex items-center gap-2" style={{color:'#d4a017'}}>
-                  <span>♦</span> キャラクター概要
+              <div className="knov-card rounded-2xl p-6">
+                <h2 className="text-lg font-bold mb-4 flex items-center gap-2" style={{color:'#4a69bd'}}>
+                  <span>◇</span> キャラクター概要
                 </h2>
                 <p className="text-sm text-gray-400 leading-relaxed">
-                  ヒソカ・モロウは、『HUNTER×HUNTER』に登場するキャラクター。
-                  マジシャンを自称し、戦闘に異常なまでの快楽を見出す謎多き男。
-                  強者との闘いを極度に好み、潜在能力の高い者を「未熟な果実」として育てる習性を持つ。
+                  ノヴは、『HUNTER×HUNTER』キメラアント編に登場するハンター。
+                  冷静沈着で知的な人物であり、具現化系能力「4次元マンション（ハイドアンドシーク）」を駆使して
+                  討伐隊の兵站・潜入を一手に担った。しかし、王直属護衛軍のオーラを目の当たりにしたことで
+                  精神が崩壊し、髪が一夜にして白髪となった悲劇のキャラクター。
                 </p>
               </div>
 
-              <div className="hisoka-card rounded-2xl p-6"
-                style={{background:'linear-gradient(135deg, rgba(192,57,43,0.1), rgba(212,160,23,0.05))'}}>
-                <h2 className="text-sm font-bold mb-3 text-gray-400 tracking-widest">HUNTER EXAM 第四次試験</h2>
-                <p className="text-3xl font-black gradient-text">通過</p>
-                <p className="text-xs text-gray-600 mt-1">単独実力突破</p>
+              <div className="knov-card rounded-2xl p-6"
+                style={{background:'linear-gradient(135deg, rgba(108,52,131,0.1), rgba(74,105,189,0.05))'}}>
+                <h2 className="text-sm font-bold mb-3 text-gray-400 tracking-widest">東ゴルトー共和国 宮殿突入作戦</h2>
+                <p className="text-3xl font-black gradient-text">戦線離脱</p>
+                <p className="text-xs text-gray-600 mt-1">護衛軍のオーラに精神崩壊</p>
               </div>
             </div>
           </div>
@@ -320,7 +320,7 @@ function App() {
         {activeTab === 'abilities' && (
           <div className="animate-fade-in space-y-6">
             {ABILITIES.map((ab, i) => (
-              <div key={i} className="hisoka-card rounded-2xl overflow-hidden">
+              <div key={i} className="knov-card rounded-2xl overflow-hidden">
                 <div className={`bg-gradient-to-r ${ab.color} p-4 flex items-center gap-3`}>
                   <span className="text-2xl">{ab.icon}</span>
                   <div>
@@ -334,12 +334,13 @@ function App() {
               </div>
             ))}
 
-            <div className="hisoka-card rounded-2xl p-6 text-center"
-              style={{background:'linear-gradient(135deg, rgba(212,160,23,0.06), rgba(192,57,43,0.06))'}}>
-              <p className="text-4xl mb-3">♦</p>
+            <div className="knov-card rounded-2xl p-6 text-center"
+              style={{background:'linear-gradient(135deg, rgba(74,105,189,0.06), rgba(108,52,131,0.06))'}}>
+              <p className="text-4xl mb-3">◆</p>
               <p className="text-sm text-gray-500 leading-relaxed">
-                「伸縮自在の愛（バンジーガム）」にはゴムとガム両方の性質がある♠<br/>
-                <span className="text-gray-300 italic">— ヒソカ</span>
+                戦闘能力だけでなく、兵站・移動手段としても<br/>
+                極めて高い汎用性を持つ稀有な能力<br/>
+                <span className="text-gray-300 italic">— 4次元マンション</span>
               </p>
             </div>
           </div>
@@ -348,9 +349,9 @@ function App() {
         {/* Stats */}
         {activeTab === 'stats' && (
           <div className="animate-fade-in grid md:grid-cols-2 gap-6">
-            <div className="hisoka-card rounded-2xl p-6">
-              <h2 className="text-lg font-bold mb-6 flex items-center gap-2" style={{color:'#d4a017'}}>
-                <span>♥</span> 戦闘ステータス
+            <div className="knov-card rounded-2xl p-6">
+              <h2 className="text-lg font-bold mb-6 flex items-center gap-2" style={{color:'#4a69bd'}}>
+                <span>◇</span> 能力ステータス
               </h2>
               {STATS.map((s, i) => (
                 <StatBar key={s.label} {...s} delay={i * 150} />
@@ -359,12 +360,12 @@ function App() {
 
             <div className="space-y-4">
               {[
-                { label: '殺傷能力', grade: 'S', desc: '幻影旅団を単独で壊滅させうる実力', color: '#c0392b' },
-                { label: '念の習熟度', grade: 'S+', desc: 'バンジーガムで変化系トップクラス', color: '#d4a017' },
-                { label: '格闘技術', grade: 'S', desc: '近接・遠距離どちらも超一流', color: '#c0392b' },
-                { label: '精神的脅威度', grade: 'EX', desc: '読めない行動原理で相手を翻弄', color: '#8b5cf6' },
+                { label: '戦略立案能力', grade: 'S+', desc: '宮殿突入作戦の兵站を担当', color: '#4a69bd' },
+                { label: '念の習熟度', grade: 'S', desc: '具現化系の中でもトップクラス', color: '#6c3483' },
+                { label: '攻撃能力', grade: 'A', desc: 'スクリームによる即死級攻撃', color: '#4a69bd' },
+                { label: '精神耐性', grade: 'D', desc: '護衛軍のオーラで精神崩壊', color: '#ef4444' },
               ].map((item, i) => (
-                <div key={i} className="hisoka-card rounded-xl p-4 flex items-center gap-4">
+                <div key={i} className="knov-card rounded-xl p-4 flex items-center gap-4">
                   <div className="w-12 h-12 rounded-xl flex items-center justify-center font-black text-lg flex-shrink-0"
                     style={{background:`${item.color}22`, color:item.color, border:`1px solid ${item.color}44`}}>
                     {item.grade}
@@ -385,7 +386,7 @@ function App() {
             <QuoteCarousel />
             <div className="mt-6 grid gap-4">
               {QUOTES.map((q, i) => (
-                <div key={i} className="hisoka-card rounded-xl p-5">
+                <div key={i} className="knov-card rounded-xl p-5">
                   <p className="text-gray-200 text-sm leading-relaxed font-jp">{q.ja}</p>
                 </div>
               ))}
@@ -396,7 +397,7 @@ function App() {
 
       {/* Footer */}
       <footer className="relative z-10 text-center py-10 border-t" style={{borderColor:'rgba(255,255,255,0.05)'}}>
-        <p className="text-2xl mb-2">♠ ♦ ♥ ♣</p>
+        <p className="text-2xl mb-2">◇ ◆ □ ■</p>
         <p className="text-xs text-gray-700">HUNTER × HUNTER © Yoshihiro Togashi / Shueisha</p>
         <p className="text-xs text-gray-800 mt-1">Fan-made tribute page</p>
       </footer>
