@@ -34,7 +34,11 @@ open index.html
 
 ## デプロイ
 
-`master` ブランチの `index.html` を更新すると GitHub Pages に自動反映。
+このリポジトリには GitHub Actions (`.github/workflows/deploy-pages.yml`) を追加してあり、`main` または `master` ブランチへの push で自動デプロイされます。
+
+1. GitHub の **Settings → Pages** で **Build and deployment / Source** を **GitHub Actions** に設定
+2. `main` または `master` に push
+3. Actions の `Deploy static site to GitHub Pages` が完了すると公開URLへ反映
 
 ---
 
