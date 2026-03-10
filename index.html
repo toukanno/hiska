@@ -21,12 +21,14 @@
           'slide-up': 'slideUp 0.7s ease forwards',
           'float': 'float 3s ease-in-out infinite',
           'glow-pulse': 'glowPulse 2s ease-in-out infinite',
+          'card-spin': 'cardSpin 20s linear infinite',
         },
         keyframes: {
           fadeIn: { from: { opacity: 0 }, to: { opacity: 1 } },
           slideUp: { from: { opacity: 0, transform: 'translateY(32px)' }, to: { opacity: 1, transform: 'translateY(0)' } },
           float: { '0%,100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-10px)' } },
           glowPulse: { '0%,100%': { boxShadow: '0 0 20px rgba(192,57,43,0.4)' }, '50%': { boxShadow: '0 0 40px rgba(192,57,43,0.8), 0 0 80px rgba(192,57,43,0.3)' } },
+          cardSpin: { from: { transform: 'rotate(0deg)' }, to: { transform: 'rotate(360deg)' } },
         },
       }
     }
@@ -44,13 +46,13 @@
   @keyframes shimmer { to { background-position: 200% center; } }
   .hisoka-card {
     background: linear-gradient(145deg, #1a1a1a, #141414);
-    border: 1px solid rgba(212,160,23,0.2);
-    transition: all 0.3s ease;
+    border: 1px solid rgba(212,160,23,0.15);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .hisoka-card:hover {
-    border-color: rgba(212,160,23,0.6);
+    border-color: rgba(212,160,23,0.5);
     transform: translateY(-4px);
-    box-shadow: 0 10px 40px rgba(192,57,43,0.2);
+    box-shadow: 0 20px 60px rgba(192,57,43,0.15), 0 0 30px rgba(212,160,23,0.05);
   }
   .suit-bg {
     position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 0;
@@ -61,10 +63,95 @@
   }
   @keyframes driftDown { from { transform: translateY(-80px) rotate(0deg); } to { transform: translateY(110vh) rotate(360deg); } }
   .ability-bar { background: linear-gradient(90deg, #c0392b, #d4a017); }
-  .progress-track { background: rgba(255,255,255,0.08); border-radius: 9999px; overflow: hidden; }
+  .progress-track { background: rgba(255,255,255,0.06); border-radius: 9999px; overflow: hidden; }
   ::-webkit-scrollbar { width: 4px; }
   ::-webkit-scrollbar-track { background: #0a0a0a; }
   ::-webkit-scrollbar-thumb { background: #c0392b; border-radius: 2px; }
+
+  .hero-image-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .hero-image-glow {
+    position: absolute;
+    inset: -20px;
+    background: radial-gradient(ellipse, rgba(192,57,43,0.2) 0%, transparent 70%);
+    filter: blur(30px);
+    z-index: 0;
+  }
+  .hero-image {
+    position: relative;
+    z-index: 1;
+    max-height: 420px;
+    width: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 0 30px rgba(192,57,43,0.3)) drop-shadow(0 0 60px rgba(212,160,23,0.15));
+    transition: transform 0.5s ease, filter 0.5s ease;
+  }
+  .hero-image:hover {
+    transform: scale(1.03);
+    filter: drop-shadow(0 0 40px rgba(192,57,43,0.5)) drop-shadow(0 0 80px rgba(212,160,23,0.25));
+  }
+  .char-image {
+    object-fit: cover;
+    border-radius: 12px;
+    transition: transform 0.4s ease;
+  }
+  .char-image:hover { transform: scale(1.02); }
+
+  .ability-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 12px 12px 0 0;
+  }
+
+  .section-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(212,160,23,0.3), rgba(192,57,43,0.3), transparent);
+    margin: 0 auto;
+    max-width: 400px;
+  }
+
+  .profile-image-frame {
+    position: relative;
+    overflow: hidden;
+    border-radius: 16px;
+    border: 2px solid rgba(212,160,23,0.2);
+  }
+  .profile-image-frame::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 60%, rgba(10,10,10,0.8) 100%);
+    pointer-events: none;
+  }
+
+  .tab-indicator {
+    position: absolute;
+    bottom: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #c0392b, #d4a017);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 2px 2px 0 0;
+  }
+
+  .quote-bg-pattern {
+    background-image: radial-gradient(rgba(212,160,23,0.03) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  .image-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(145deg, #1a1a1a, #111);
+    color: rgba(212,160,23,0.3);
+    font-size: 3rem;
+    min-height: 200px;
+  }
 </style>
 </head>
 <body>
@@ -72,6 +159,14 @@
 
 <script type="text/babel">
 const { useState, useEffect, useRef } = React;
+
+// ── Image URLs ───────────────────────────────────────────
+const IMAGES = {
+  hero: "https://static.wikia.nocookie.net/hunterxhunter/images/2/20/Hisoka_G.I_Design_%282011_Anime%29.png/revision/latest/scale-to-width-down/400",
+  portrait: "https://static.wikia.nocookie.net/hunterxhunter/images/2/29/Hisoka_Morow_YC_Portrait.png/revision/latest/scale-to-width-down/350",
+  debut: "https://static.wikia.nocookie.net/hunterxhunter/images/0/08/HxH2011_EP3_Hisoka_debut_scene.png/revision/latest/scale-to-width-down/600",
+  manga: "https://static.wikia.nocookie.net/hunterxhunter/images/7/78/Chap_392_Hisoka_Portrait.png/revision/latest/scale-to-width-down/350",
+};
 
 // ── Data ──────────────────────────────────────────────────
 const QUOTES = [
@@ -96,14 +191,16 @@ const ABILITIES = [
     type: "変化系",
     desc: "自身のオーラにゴムとガム両方の性質を持たせる変化系能力。伸縮自在に伸び縮みし、あらゆるものに付着させることができる。攻防一体の万能能力で、ヒソカの戦闘スタイルの核。",
     color: "from-red-700 to-red-900",
-    icon: "♦"
+    icon: "♦",
+    image: IMAGES.debut,
   },
   {
     name: "薄っぺらな嘘（ドッキリテクスチャー）",
     type: "変化系",
     desc: "オーラを変化させ、薄い物体の表面にあらゆる質感・模様を再現する能力。幻影旅団の蜘蛛の刺青を偽装したり、切断された腕を繋がっているように見せかけるなど、欺瞞に特化した能力。",
     color: "from-yellow-700 to-yellow-900",
-    icon: "♠"
+    icon: "♠",
+    image: IMAGES.manga,
   },
 ];
 
@@ -142,19 +239,43 @@ function SuitBackground() {
   );
 }
 
+function CharImage({ src, alt, className, style }) {
+  const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState(false);
+  if (error) {
+    return (
+      <div className={`image-placeholder ${className || ''}`} style={style}>
+        <span>♦</span>
+      </div>
+    );
+  }
+  return (
+    <img
+      src={src}
+      alt={alt}
+      referrerPolicy="no-referrer"
+      crossOrigin="anonymous"
+      className={className}
+      style={{...style, opacity: loaded ? 1 : 0, transition: 'opacity 0.5s ease'}}
+      onLoad={() => setLoaded(true)}
+      onError={() => setError(true)}
+    />
+  );
+}
+
 function StatBar({ label, value, icon, delay }) {
   const [width, setWidth] = useState(0);
   useEffect(() => {
     setTimeout(() => setWidth(value), delay);
   }, []);
   return (
-    <div className="mb-4">
-      <div className="flex justify-between items-center mb-1">
-        <span className="text-sm text-gray-300 font-jp">{icon} {label}</span>
-        <span className="text-sm font-bold" style={{color:'#d4a017'}}>{value}</span>
+    <div className="mb-5">
+      <div className="flex justify-between items-center mb-1.5">
+        <span className="text-sm text-gray-300 font-jp tracking-wide">{icon} {label}</span>
+        <span className="text-sm font-black tabular-nums" style={{color:'#d4a017'}}>{value}</span>
       </div>
-      <div className="progress-track h-2">
-        <div className="ability-bar h-2 rounded-full transition-all duration-1000 ease-out"
+      <div className="progress-track h-2.5">
+        <div className="ability-bar h-2.5 rounded-full transition-all duration-1000 ease-out"
           style={{width: `${width}%`}} />
       </div>
     </div>
@@ -164,35 +285,33 @@ function StatBar({ label, value, icon, delay }) {
 function QuoteCarousel() {
   const [idx, setIdx] = useState(0);
   const [visible, setVisible] = useState(true);
-  const next = () => {
+  const change = (newIdx) => {
     setVisible(false);
-    setTimeout(() => { setIdx(i => (i+1) % QUOTES.length); setVisible(true); }, 300);
+    setTimeout(() => { setIdx(newIdx); setVisible(true); }, 300);
   };
-  const prev = () => {
-    setVisible(false);
-    setTimeout(() => { setIdx(i => (i-1+QUOTES.length) % QUOTES.length); setVisible(true); }, 300);
-  };
+  const next = () => change((idx+1) % QUOTES.length);
+  const prev = () => change((idx-1+QUOTES.length) % QUOTES.length);
   return (
-    <div className="hisoka-card rounded-2xl p-8 text-center relative overflow-hidden">
-      <div className="absolute top-4 left-6 text-6xl opacity-10 font-serif" style={{color:'#d4a017'}}>"</div>
-      <div className="absolute bottom-4 right-6 text-6xl opacity-10 font-serif rotate-180" style={{color:'#d4a017'}}>"</div>
-      <div className="transition-opacity duration-300 relative z-10" style={{opacity: visible ? 1 : 0}}>
-        <p className="text-lg leading-relaxed text-gray-100 font-jp mb-4">{QUOTES[idx].ja}</p>
-        <p className="text-sm text-gray-500 italic">{QUOTES[idx].en}</p>
+    <div className="hisoka-card rounded-2xl p-10 text-center relative overflow-hidden quote-bg-pattern">
+      <div className="absolute top-4 left-6 text-7xl opacity-10 font-serif" style={{color:'#d4a017'}}>"</div>
+      <div className="absolute bottom-4 right-6 text-7xl opacity-10 font-serif rotate-180" style={{color:'#d4a017'}}>"</div>
+      <div className="transition-all duration-300 relative z-10" style={{opacity: visible ? 1 : 0, transform: visible ? 'translateY(0)' : 'translateY(8px)'}}>
+        <p className="text-xl leading-relaxed text-gray-100 font-jp mb-5 max-w-xl mx-auto">{QUOTES[idx].ja}</p>
+        <p className="text-sm text-gray-500 italic max-w-md mx-auto">{QUOTES[idx].en}</p>
       </div>
-      <div className="flex justify-center gap-4 mt-6">
+      <div className="flex justify-center gap-4 mt-8">
         <button onClick={prev}
-          className="w-10 h-10 rounded-full border border-yellow-700 text-yellow-600 hover:bg-yellow-900/30 transition-all flex items-center justify-center">
+          className="w-11 h-11 rounded-full border border-yellow-700/50 text-yellow-600 hover:bg-yellow-900/30 hover:border-yellow-600 transition-all flex items-center justify-center text-lg">
           ‹
         </button>
-        <div className="flex gap-1 items-center">
+        <div className="flex gap-2 items-center">
           {QUOTES.map((_,i) => (
-            <button key={i} onClick={() => setIdx(i)}
-              className={`w-2 h-2 rounded-full transition-all ${i===idx ? 'bg-red-600 w-4' : 'bg-gray-600'}`} />
+            <button key={i} onClick={() => change(i)}
+              className={`h-2 rounded-full transition-all duration-300 ${i===idx ? 'bg-gradient-to-r from-red-600 to-yellow-600 w-6' : 'bg-gray-700 hover:bg-gray-600 w-2'}`} />
           ))}
         </div>
         <button onClick={next}
-          className="w-10 h-10 rounded-full border border-yellow-700 text-yellow-600 hover:bg-yellow-900/30 transition-all flex items-center justify-center">
+          className="w-11 h-11 rounded-full border border-yellow-700/50 text-yellow-600 hover:bg-yellow-900/30 hover:border-yellow-600 transition-all flex items-center justify-center text-lg">
           ›
         </button>
       </div>
@@ -203,10 +322,10 @@ function QuoteCarousel() {
 function App() {
   const [activeTab, setActiveTab] = useState('profile');
   const tabs = [
-    { id: 'profile', label: '♠ プロフィール' },
-    { id: 'abilities', label: '♦ 能力' },
-    { id: 'stats', label: '♥ ステータス' },
-    { id: 'quotes', label: '♣ 名言' },
+    { id: 'profile', label: 'プロフィール', icon: '♠' },
+    { id: 'abilities', label: '能力', icon: '♦' },
+    { id: 'stats', label: 'ステータス', icon: '♥' },
+    { id: 'quotes', label: '名言', icon: '♣' },
   ];
 
   return (
@@ -214,51 +333,74 @@ function App() {
       <SuitBackground />
 
       {/* Hero */}
-      <div className="relative z-10 overflow-hidden" style={{background:'linear-gradient(180deg, #1a0505 0%, #0a0a0a 100%)'}}>
-        <div className="absolute inset-0" style={{background:'radial-gradient(ellipse at 50% 0%, rgba(192,57,43,0.15) 0%, transparent 60%)'}} />
-        <div className="max-w-4xl mx-auto px-6 py-20 text-center relative">
-          {/* Suit decoration */}
-          <div className="flex justify-center gap-8 mb-8 text-2xl opacity-40">
-            {['♠','♦','♥','♣'].map((s,i) => (
-              <span key={i} style={{color: i%2===0 ? '#d4a017' : '#c0392b', animationDelay:`${i*0.2}s`}}
-                className="animate-float inline-block">{s}</span>
-            ))}
-          </div>
+      <div className="relative z-10 overflow-hidden" style={{background:'linear-gradient(180deg, #1a0505 0%, #0f0505 40%, #0a0a0a 100%)'}}>
+        <div className="absolute inset-0" style={{background:'radial-gradient(ellipse at 50% 30%, rgba(192,57,43,0.12) 0%, transparent 60%)'}} />
+        <div className="absolute inset-0" style={{background:'radial-gradient(ellipse at 30% 80%, rgba(212,160,23,0.06) 0%, transparent 50%)'}} />
 
-          <div className="inline-block mb-6 px-4 py-1 rounded-full border text-xs tracking-widest"
-            style={{borderColor:'rgba(212,160,23,0.3)', color:'#d4a017', background:'rgba(212,160,23,0.05)'}}>
-            HUNTER × HUNTER
-          </div>
+        <div className="max-w-5xl mx-auto px-6 py-16 md:py-20 relative">
+          <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
+            {/* Text content */}
+            <div className="flex-1 text-center md:text-left order-2 md:order-1">
+              <div className="flex justify-center md:justify-start gap-6 mb-6 text-xl opacity-40">
+                {['♠','♦','♥','♣'].map((s,i) => (
+                  <span key={i} style={{color: i%2===0 ? '#d4a017' : '#c0392b', animationDelay:`${i*0.2}s`}}
+                    className="animate-float inline-block">{s}</span>
+                ))}
+              </div>
 
-          <h1 className="text-6xl md:text-8xl font-black mb-4 leading-none tracking-tight">
-            <span className="gradient-text">HISOKA</span>
-          </h1>
-          <p className="text-2xl text-gray-400 mb-2 font-light tracking-widest">ヒソカ＝モロウ</p>
-          <p className="text-sm text-gray-600 tracking-widest">MOROW</p>
+              <div className="inline-block mb-5 px-4 py-1.5 rounded-full border text-xs tracking-[0.25em] font-medium"
+                style={{borderColor:'rgba(212,160,23,0.25)', color:'#d4a017', background:'rgba(212,160,23,0.04)'}}>
+                HUNTER × HUNTER
+              </div>
 
-          <div className="flex justify-center gap-3 mt-8 flex-wrap">
-            {['奇術師', '変化系', '元No.4', '戦闘狂'].map((tag,i) => (
-              <span key={i} className="px-3 py-1 rounded-full text-xs border"
-                style={{borderColor:'rgba(192,57,43,0.4)', color:'#ef9e9e', background:'rgba(192,57,43,0.08)'}}>
-                {tag}
-              </span>
-            ))}
+              <h1 className="text-5xl md:text-7xl lg:text-8xl font-black mb-3 leading-none tracking-tight">
+                <span className="gradient-text">HISOKA</span>
+              </h1>
+              <p className="text-xl md:text-2xl text-gray-400 mb-1.5 font-light tracking-[0.15em]">ヒソカ＝モロウ</p>
+              <p className="text-xs text-gray-600 tracking-[0.3em] mb-6">MOROW</p>
+
+              <div className="flex justify-center md:justify-start gap-2.5 flex-wrap">
+                {['奇術師', '変化系', '元No.4', '戦闘狂'].map((tag,i) => (
+                  <span key={i} className="px-3.5 py-1.5 rounded-full text-xs font-medium border"
+                    style={{borderColor:'rgba(192,57,43,0.3)', color:'#ef9e9e', background:'rgba(192,57,43,0.06)'}}>
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Hero image */}
+            <div className="flex-shrink-0 order-1 md:order-2">
+              <div className="hero-image-container">
+                <div className="hero-image-glow"></div>
+                <CharImage
+                  src={IMAGES.hero}
+                  alt="ヒソカ＝モロウ"
+                  className="hero-image"
+                  style={{maxWidth: '320px'}}
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
+      {/* Divider */}
+      <div className="relative z-10 section-divider" />
+
       {/* Tabs */}
       <div className="relative z-10 sticky top-0"
-        style={{background:'rgba(10,10,10,0.95)', backdropFilter:'blur(12px)', borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
-        <div className="max-w-4xl mx-auto px-6">
-          <div className="flex gap-0 overflow-x-auto">
+        style={{background:'rgba(10,10,10,0.92)', backdropFilter:'blur(16px)', borderBottom:'1px solid rgba(255,255,255,0.05)'}}>
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="flex gap-0 overflow-x-auto relative">
             {tabs.map(tab => (
               <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-                className={`px-5 py-4 text-sm font-bold whitespace-nowrap transition-all border-b-2 ${
+                className={`px-6 py-4 text-sm font-bold whitespace-nowrap transition-all border-b-2 ${
                   activeTab === tab.id
-                    ? 'border-red-600 text-red-400'
+                    ? 'border-red-600 text-white'
                     : 'border-transparent text-gray-500 hover:text-gray-300'
                 }`}>
+                <span className="mr-1.5" style={{color: activeTab === tab.id ? '#d4a017' : 'inherit'}}>{tab.icon}</span>
                 {tab.label}
               </button>
             ))}
@@ -267,43 +409,74 @@ function App() {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 max-w-4xl mx-auto px-6 py-12">
+      <div className="relative z-10 max-w-5xl mx-auto px-6 py-12">
 
         {/* Profile */}
         {activeTab === 'profile' && (
-          <div className="animate-fade-in grid md:grid-cols-2 gap-6">
-            <div className="hisoka-card rounded-2xl p-6">
-              <h2 className="text-lg font-bold mb-6 flex items-center gap-2" style={{color:'#d4a017'}}>
-                <span>♠</span> 基本プロフィール
-              </h2>
-              <div className="space-y-3">
-                {PROFILE.map(({ label, value }) => (
-                  <div key={label} className="flex justify-between items-center py-2"
-                    style={{borderBottom:'1px solid rgba(255,255,255,0.05)'}}>
-                    <span className="text-xs text-gray-500 tracking-wider">{label}</span>
-                    <span className="text-sm text-gray-200 font-medium">{value}</span>
-                  </div>
-                ))}
+          <div className="animate-fade-in">
+            {/* Character image banner */}
+            <div className="mb-8 rounded-2xl overflow-hidden relative" style={{height: '280px'}}>
+              <CharImage
+                src={IMAGES.debut}
+                alt="ヒソカ ハンター試験"
+                style={{width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 20%'}}
+              />
+              <div className="absolute inset-0" style={{background: 'linear-gradient(180deg, transparent 30%, rgba(10,10,10,0.95) 100%)'}} />
+              <div className="absolute bottom-0 left-0 p-6">
+                <h2 className="text-2xl font-black gradient-text">Character Profile</h2>
+                <p className="text-sm text-gray-400 mt-1">HUNTER × HUNTER 2011</p>
               </div>
             </div>
 
-            <div className="space-y-5">
-              <div className="hisoka-card rounded-2xl p-6">
-                <h2 className="text-lg font-bold mb-4 flex items-center gap-2" style={{color:'#d4a017'}}>
-                  <span>♦</span> キャラクター概要
-                </h2>
-                <p className="text-sm text-gray-400 leading-relaxed">
-                  ヒソカ・モロウは、『HUNTER×HUNTER』に登場するキャラクター。
-                  マジシャンを自称し、戦闘に異常なまでの快楽を見出す謎多き男。
-                  強者との闘いを極度に好み、潜在能力の高い者を「未熟な果実」として育てる習性を持つ。
-                </p>
+            <div className="grid md:grid-cols-3 gap-6">
+              {/* Portrait */}
+              <div className="md:col-span-1">
+                <div className="profile-image-frame mb-6">
+                  <CharImage
+                    src={IMAGES.portrait}
+                    alt="ヒソカ ポートレート"
+                    style={{width: '100%', height: '350px', objectFit: 'cover', objectPosition: 'top'}}
+                  />
+                </div>
+                <div className="hisoka-card rounded-2xl p-5 text-center"
+                  style={{background:'linear-gradient(135deg, rgba(192,57,43,0.08), rgba(212,160,23,0.04))'}}>
+                  <p className="text-xs text-gray-500 tracking-widest mb-2">HUNTER EXAM</p>
+                  <p className="text-3xl font-black gradient-text">通過</p>
+                  <p className="text-xs text-gray-600 mt-1">単独実力突破</p>
+                </div>
               </div>
 
-              <div className="hisoka-card rounded-2xl p-6"
-                style={{background:'linear-gradient(135deg, rgba(192,57,43,0.1), rgba(212,160,23,0.05))'}}>
-                <h2 className="text-sm font-bold mb-3 text-gray-400 tracking-widest">HUNTER EXAM 第四次試験</h2>
-                <p className="text-3xl font-black gradient-text">通過</p>
-                <p className="text-xs text-gray-600 mt-1">単独実力突破</p>
+              {/* Info */}
+              <div className="md:col-span-2 space-y-6">
+                <div className="hisoka-card rounded-2xl p-6">
+                  <h2 className="text-lg font-bold mb-6 flex items-center gap-2" style={{color:'#d4a017'}}>
+                    <span className="text-xl">♠</span> 基本プロフィール
+                  </h2>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-0">
+                    {PROFILE.map(({ label, value }) => (
+                      <div key={label} className="flex justify-between items-center py-3"
+                        style={{borderBottom:'1px solid rgba(255,255,255,0.04)'}}>
+                        <span className="text-xs text-gray-500 tracking-wider uppercase">{label}</span>
+                        <span className="text-sm text-gray-200 font-medium">{value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="hisoka-card rounded-2xl p-6">
+                  <h2 className="text-lg font-bold mb-4 flex items-center gap-2" style={{color:'#d4a017'}}>
+                    <span className="text-xl">♦</span> キャラクター概要
+                  </h2>
+                  <p className="text-sm text-gray-400 leading-relaxed mb-4">
+                    ヒソカ・モロウは、『HUNTER×HUNTER』に登場するキャラクター。
+                    マジシャンを自称し、戦闘に異常なまでの快楽を見出す謎多き男。
+                    強者との闘いを極度に好み、潜在能力の高い者を「未熟な果実」として育てる習性を持つ。
+                  </p>
+                  <p className="text-sm text-gray-400 leading-relaxed">
+                    幻影旅団にはNo.4として偽装入団しており、その真の目的は団長クロロとの対決であった。
+                    天空闘技場では200階クラスの闘士としてゴンと対戦し、ハンター試験では審査官を務めるほどの実力者。
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -311,14 +484,33 @@ function App() {
 
         {/* Abilities */}
         {activeTab === 'abilities' && (
-          <div className="animate-fade-in space-y-6">
+          <div className="animate-fade-in space-y-8">
+            <div className="text-center mb-4">
+              <h2 className="text-2xl font-black gradient-text inline-block">念能力</h2>
+              <p className="text-sm text-gray-500 mt-2">Nen Abilities — 変化系</p>
+            </div>
+
             {ABILITIES.map((ab, i) => (
-              <div key={i} className="hisoka-card rounded-2xl overflow-hidden">
-                <div className={`bg-gradient-to-r ${ab.color} p-4 flex items-center gap-3`}>
-                  <span className="text-2xl">{ab.icon}</span>
-                  <div>
-                    <h3 className="text-xl font-black">{ab.name}</h3>
-                    <span className="text-xs opacity-75 tracking-wider">{ab.type}</span>
+              <div key={i} className="hisoka-card rounded-2xl overflow-hidden group">
+                {/* Ability image */}
+                <div className="relative overflow-hidden" style={{height: '220px'}}>
+                  <CharImage
+                    src={ab.image}
+                    alt={ab.name}
+                    style={{width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center'}}
+                  />
+                  <div className="absolute inset-0" style={{background: `linear-gradient(180deg, transparent 20%, rgba(20,20,20,0.95) 100%)`}} />
+                  <div className="absolute bottom-0 left-0 right-0 p-6">
+                    <div className="flex items-center gap-3">
+                      <span className="text-3xl" style={{textShadow: '0 0 20px rgba(192,57,43,0.5)'}}>{ab.icon}</span>
+                      <div>
+                        <h3 className="text-xl font-black text-white">{ab.name}</h3>
+                        <span className="text-xs tracking-wider px-2 py-0.5 rounded-full"
+                          style={{background: 'rgba(212,160,23,0.15)', color: '#d4a017', border: '1px solid rgba(212,160,23,0.2)'}}>
+                          {ab.type}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <div className="p-6">
@@ -327,47 +519,73 @@ function App() {
               </div>
             ))}
 
-            <div className="hisoka-card rounded-2xl p-6 text-center"
-              style={{background:'linear-gradient(135deg, rgba(212,160,23,0.06), rgba(192,57,43,0.06))'}}>
-              <p className="text-4xl mb-3">♦</p>
-              <p className="text-sm text-gray-500 leading-relaxed">
-                「伸縮自在の愛（バンジーガム）」にはゴムとガム両方の性質がある♠<br/>
-                <span className="text-gray-300 italic">— ヒソカ</span>
-              </p>
+            <div className="hisoka-card rounded-2xl p-8 text-center relative overflow-hidden"
+              style={{background:'linear-gradient(135deg, rgba(212,160,23,0.04), rgba(192,57,43,0.04))'}}>
+              <div className="absolute inset-0 quote-bg-pattern" />
+              <div className="relative z-10">
+                <p className="text-5xl mb-4">♦</p>
+                <p className="text-lg text-gray-300 font-jp leading-relaxed mb-2">
+                  「伸縮自在の愛（バンジーガム）」にはゴムとガム両方の性質がある♠
+                </p>
+                <p className="text-sm text-gray-500 italic">— ヒソカ</p>
+              </div>
             </div>
           </div>
         )}
 
         {/* Stats */}
         {activeTab === 'stats' && (
-          <div className="animate-fade-in grid md:grid-cols-2 gap-6">
-            <div className="hisoka-card rounded-2xl p-6">
-              <h2 className="text-lg font-bold mb-6 flex items-center gap-2" style={{color:'#d4a017'}}>
-                <span>♥</span> 戦闘ステータス
-              </h2>
-              {STATS.map((s, i) => (
-                <StatBar key={s.label} {...s} delay={i * 150} />
-              ))}
+          <div className="animate-fade-in">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-black gradient-text inline-block">戦闘能力</h2>
+              <p className="text-sm text-gray-500 mt-2">Combat Statistics</p>
             </div>
 
-            <div className="space-y-4">
-              {[
-                { label: '殺傷能力', grade: 'S', desc: '幻影旅団を単独で壊滅させうる実力', color: '#c0392b' },
-                { label: '念の習熟度', grade: 'S+', desc: 'バンジーガムで変化系トップクラス', color: '#d4a017' },
-                { label: '格闘技術', grade: 'S', desc: '近接・遠距離どちらも超一流', color: '#c0392b' },
-                { label: '精神的脅威度', grade: 'EX', desc: '読めない行動原理で相手を翻弄', color: '#8b5cf6' },
-              ].map((item, i) => (
-                <div key={i} className="hisoka-card rounded-xl p-4 flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl flex items-center justify-center font-black text-lg flex-shrink-0"
-                    style={{background:`${item.color}22`, color:item.color, border:`1px solid ${item.color}44`}}>
-                    {item.grade}
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="hisoka-card rounded-2xl p-6">
+                <h2 className="text-lg font-bold mb-6 flex items-center gap-2" style={{color:'#d4a017'}}>
+                  <span className="text-xl">♥</span> 戦闘ステータス
+                </h2>
+                {STATS.map((s, i) => (
+                  <StatBar key={s.label} {...s} delay={i * 150} />
+                ))}
+              </div>
+
+              <div className="space-y-4">
+                {[
+                  { label: '殺傷能力', grade: 'S', desc: '幻影旅団を単独で壊滅させうる実力', color: '#c0392b' },
+                  { label: '念の習熟度', grade: 'S+', desc: 'バンジーガムで変化系トップクラス', color: '#d4a017' },
+                  { label: '格闘技術', grade: 'S', desc: '近接・遠距離どちらも超一流', color: '#c0392b' },
+                  { label: '精神的脅威度', grade: 'EX', desc: '読めない行動原理で相手を翻弄', color: '#8b5cf6' },
+                ].map((item, i) => (
+                  <div key={i} className="hisoka-card rounded-xl p-5 flex items-center gap-4 group">
+                    <div className="w-14 h-14 rounded-xl flex items-center justify-center font-black text-lg flex-shrink-0 transition-all group-hover:scale-110"
+                      style={{background:`${item.color}15`, color:item.color, border:`1px solid ${item.color}33`, boxShadow: `0 0 20px ${item.color}10`}}>
+                      {item.grade}
+                    </div>
+                    <div>
+                      <p className="font-bold text-sm text-gray-200">{item.label}</p>
+                      <p className="text-xs text-gray-500 mt-1">{item.desc}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-bold text-sm text-gray-200">{item.label}</p>
-                    <p className="text-xs text-gray-500 mt-0.5">{item.desc}</p>
+                ))}
+
+                {/* Manga portrait in stats */}
+                <div className="hisoka-card rounded-xl overflow-hidden">
+                  <div className="relative" style={{height: '180px'}}>
+                    <CharImage
+                      src={IMAGES.manga}
+                      alt="ヒソカ（漫画版）"
+                      style={{width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top'}}
+                    />
+                    <div className="absolute inset-0" style={{background: 'linear-gradient(180deg, transparent 40%, rgba(20,20,20,0.9) 100%)'}} />
+                    <div className="absolute bottom-3 left-4">
+                      <p className="text-xs text-gray-400 tracking-wider">CHAPTER 392</p>
+                      <p className="text-sm font-bold text-gray-200">漫画版ヒソカ</p>
+                    </div>
                   </div>
                 </div>
-              ))}
+              </div>
             </div>
           </div>
         )}
@@ -375,11 +593,24 @@ function App() {
         {/* Quotes */}
         {activeTab === 'quotes' && (
           <div className="animate-fade-in">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-black gradient-text inline-block">名言集</h2>
+              <p className="text-sm text-gray-500 mt-2">Memorable Quotes</p>
+            </div>
+
             <QuoteCarousel />
-            <div className="mt-6 grid gap-4">
+
+            <div className="mt-8 grid gap-4">
               {QUOTES.map((q, i) => (
-                <div key={i} className="hisoka-card rounded-xl p-5">
-                  <p className="text-gray-200 text-sm leading-relaxed font-jp">{q.ja}</p>
+                <div key={i} className="hisoka-card rounded-xl p-6 flex gap-4 items-start group">
+                  <span className="text-xl mt-0.5 flex-shrink-0 opacity-40 group-hover:opacity-80 transition-opacity"
+                    style={{color: ['#c0392b','#d4a017','#c0392b','#d4a017','#c0392b'][i]}}>
+                    {['♠','♦','♥','♣','♦'][i]}
+                  </span>
+                  <div>
+                    <p className="text-gray-200 text-sm leading-relaxed font-jp mb-2">{q.ja}</p>
+                    <p className="text-xs text-gray-600 italic">{q.en}</p>
+                  </div>
                 </div>
               ))}
             </div>
@@ -388,8 +619,13 @@ function App() {
       </div>
 
       {/* Footer */}
-      <footer className="relative z-10 text-center py-10 border-t" style={{borderColor:'rgba(255,255,255,0.05)'}}>
-        <p className="text-2xl mb-2">♠ ♦ ♥ ♣</p>
+      <div className="relative z-10 section-divider mt-8" />
+      <footer className="relative z-10 text-center py-12">
+        <div className="flex justify-center gap-4 mb-4 text-xl opacity-30">
+          {['♠','♦','♥','♣'].map((s,i) => (
+            <span key={i} className="animate-float" style={{color: i%2===0 ? '#d4a017' : '#c0392b', animationDelay: `${i*0.3}s`}}>{s}</span>
+          ))}
+        </div>
         <p className="text-xs text-gray-700">HUNTER × HUNTER © Yoshihiro Togashi / Shueisha</p>
         <p className="text-xs text-gray-800 mt-1">Fan-made tribute page</p>
       </footer>
