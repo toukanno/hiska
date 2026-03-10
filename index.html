@@ -3,48 +3,69 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ヒソカ・モロウ — 紹介ページ</title>
-<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-  tailwind.config = {
-    theme: {
-      extend: {
-        colors: {
-          hisoka: { red: '#c0392b', gold: '#d4a017', dark: '#0a0a0a', card: '#141414' },
-        },
-        fontFamily: { jp: ['"Noto Serif JP"', 'serif'] },
-        animation: {
-          'fade-in': 'fadeIn 0.8s ease forwards',
-          'slide-up': 'slideUp 0.7s ease forwards',
-          'float': 'float 3s ease-in-out infinite',
-          'glow-pulse': 'glowPulse 2s ease-in-out infinite',
-        },
-        keyframes: {
-          fadeIn: { from: { opacity: 0 }, to: { opacity: 1 } },
-          slideUp: { from: { opacity: 0, transform: 'translateY(32px)' }, to: { opacity: 1, transform: 'translateY(0)' } },
-          float: { '0%,100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-10px)' } },
-          glowPulse: { '0%,100%': { boxShadow: '0 0 20px rgba(192,57,43,0.4)' }, '50%': { boxShadow: '0 0 40px rgba(192,57,43,0.8), 0 0 80px rgba(192,57,43,0.3)' } },
-        },
-      }
-    }
-  }
-</script>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;700;900&display=swap" rel="stylesheet">
+<title>ヒソカ＝モロウ — 紹介ページ</title>
 <style>
-  body { background-color: #0a0a0a; }
-  .card-suit { font-family: serif; }
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;700;900&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --red: #c0392b;
+    --gold: #d4a017;
+    --dark: #0a0a0a;
+    --card: #141414;
+  }
+
+  body {
+    background: var(--dark);
+    color: #fff;
+    font-family: 'Noto Serif JP', serif;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--dark); }
+  ::-webkit-scrollbar-thumb { background: var(--red); border-radius: 2px; }
+
+  /* Suit background */
+  .suit-bg {
+    position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 0;
+  }
+  .suit-item {
+    position: absolute; font-size: 1.5rem; opacity: 0.03; color: var(--gold);
+    animation: driftDown linear infinite;
+  }
+  @keyframes driftDown {
+    from { transform: translateY(-80px) rotate(0deg); }
+    to { transform: translateY(110vh) rotate(360deg); }
+  }
+
+  /* Gradient text */
   .gradient-text {
-    background: linear-gradient(135deg, #d4a017, #c0392b, #d4a017);
+    background: linear-gradient(135deg, var(--gold), var(--red), var(--gold));
     -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
     background-size: 200% auto; animation: shimmer 3s linear infinite;
   }
   @keyframes shimmer { to { background-position: 200% center; } }
+
+  /* Float animation */
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  .animate-float { animation: float 3s ease-in-out infinite; display: inline-block; }
+
+  /* Fade in */
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .animate-fade-in { animation: fadeIn 0.8s ease forwards; }
+
+  /* Card */
   .hisoka-card {
     background: linear-gradient(145deg, #1a1a1a, #141414);
     border: 1px solid rgba(212,160,23,0.2);
+    border-radius: 1rem;
     transition: all 0.3s ease;
   }
   .hisoka-card:hover {
@@ -52,37 +73,268 @@
     transform: translateY(-4px);
     box-shadow: 0 10px 40px rgba(192,57,43,0.2);
   }
-  .suit-bg {
-    position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 0;
+
+  /* Hero */
+  .hero {
+    position: relative; z-index: 10; overflow: hidden;
+    background: linear-gradient(180deg, #1a0505 0%, var(--dark) 100%);
   }
-  .suit-item {
-    position: absolute; font-size: 1.5rem; opacity: 0.03; color: #d4a017;
-    animation: driftDown linear infinite;
+  .hero-glow {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(192,57,43,0.15) 0%, transparent 60%);
   }
-  @keyframes driftDown { from { transform: translateY(-80px) rotate(0deg); } to { transform: translateY(110vh) rotate(360deg); } }
-  .ability-bar { background: linear-gradient(90deg, #c0392b, #d4a017); }
-  .progress-track { background: rgba(255,255,255,0.08); border-radius: 9999px; overflow: hidden; }
-  ::-webkit-scrollbar { width: 4px; }
-  ::-webkit-scrollbar-track { background: #0a0a0a; }
-  ::-webkit-scrollbar-thumb { background: #c0392b; border-radius: 2px; }
+  .hero-content {
+    max-width: 56rem; margin: 0 auto; padding: 5rem 1.5rem; text-align: center; position: relative;
+  }
+  .suit-deco { display: flex; justify-content: center; gap: 2rem; margin-bottom: 2rem; font-size: 1.5rem; opacity: 0.4; }
+  .badge {
+    display: inline-block; margin-bottom: 1.5rem; padding: 0.25rem 1rem;
+    border-radius: 9999px; border: 1px solid rgba(212,160,23,0.3);
+    font-size: 0.75rem; letter-spacing: 0.15em; color: var(--gold);
+    background: rgba(212,160,23,0.05);
+  }
+  .hero h1 { font-size: clamp(3.5rem, 10vw, 6rem); font-weight: 900; line-height: 1; letter-spacing: -0.02em; margin-bottom: 1rem; }
+  .hero .subtitle { font-size: 1.5rem; color: #9ca3af; font-weight: 300; letter-spacing: 0.15em; margin-bottom: 0.5rem; }
+  .hero .sub2 { font-size: 0.875rem; color: #4b5563; letter-spacing: 0.15em; }
+  .tags { display: flex; justify-content: center; gap: 0.75rem; margin-top: 2rem; flex-wrap: wrap; }
+  .tag {
+    padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem;
+    border: 1px solid rgba(192,57,43,0.4); color: #ef9e9e; background: rgba(192,57,43,0.08);
+  }
+
+  /* Tabs */
+  .tab-bar {
+    position: relative; z-index: 10; position: sticky; top: 0;
+    background: rgba(10,10,10,0.95); backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .tab-inner { max-width: 56rem; margin: 0 auto; padding: 0 1.5rem; display: flex; gap: 0; overflow-x: auto; }
+  .tab-btn {
+    padding: 1rem 1.25rem; font-size: 0.875rem; font-weight: 700; white-space: nowrap;
+    background: none; border: none; color: #6b7280; cursor: pointer;
+    border-bottom: 2px solid transparent; transition: all 0.3s; font-family: inherit;
+  }
+  .tab-btn:hover { color: #d1d5db; }
+  .tab-btn.active { border-bottom-color: var(--red); color: #f87171; }
+
+  /* Content */
+  .content { position: relative; z-index: 10; max-width: 56rem; margin: 0 auto; padding: 3rem 1.5rem; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* Grid */
+  .grid-2 { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
+  @media (min-width: 768px) { .grid-2 { grid-template-columns: 1fr 1fr; } }
+
+  /* Profile */
+  .section-title { font-size: 1.125rem; font-weight: 700; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; color: var(--gold); }
+  .profile-row {
+    display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .profile-label { font-size: 0.75rem; color: #6b7280; letter-spacing: 0.05em; }
+  .profile-value { font-size: 0.875rem; color: #e5e7eb; font-weight: 500; }
+  .overview-text { font-size: 0.875rem; color: #9ca3af; line-height: 1.8; }
+  .exam-card {
+    padding: 1.5rem; border-radius: 1rem;
+    background: linear-gradient(135deg, rgba(192,57,43,0.1), rgba(212,160,23,0.05));
+    border: 1px solid rgba(212,160,23,0.2);
+  }
+  .exam-label { font-size: 0.75rem; font-weight: 700; color: #9ca3af; letter-spacing: 0.15em; margin-bottom: 0.75rem; }
+  .exam-value { font-size: 1.875rem; font-weight: 900; }
+  .exam-sub { font-size: 0.75rem; color: #4b5563; margin-top: 0.25rem; }
+
+  /* Abilities */
+  .ability-header { padding: 1rem; display: flex; align-items: center; gap: 0.75rem; border-radius: 1rem 1rem 0 0; }
+  .ability-header.red { background: linear-gradient(to right, #b91c1c, #7f1d1d); }
+  .ability-header.yellow { background: linear-gradient(to right, #a16207, #78350f); }
+  .ability-icon { font-size: 1.5rem; }
+  .ability-name { font-size: 1.25rem; font-weight: 900; }
+  .ability-type { font-size: 0.75rem; opacity: 0.75; letter-spacing: 0.05em; }
+  .ability-desc { padding: 1.5rem; font-size: 0.875rem; color: #d1d5db; line-height: 1.8; }
+  .ability-quote-card {
+    padding: 1.5rem; text-align: center; border-radius: 1rem;
+    background: linear-gradient(135deg, rgba(212,160,23,0.06), rgba(192,57,43,0.06));
+    border: 1px solid rgba(212,160,23,0.2);
+  }
+  .ability-quote-icon { font-size: 2.25rem; margin-bottom: 0.75rem; }
+  .ability-quote-text { font-size: 0.875rem; color: #6b7280; line-height: 1.8; }
+  .ability-quote-author { color: #d1d5db; font-style: italic; }
+
+  /* Stats */
+  .stat-bar-wrap { margin-bottom: 1rem; }
+  .stat-bar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem; }
+  .stat-bar-label { font-size: 0.875rem; color: #d1d5db; }
+  .stat-bar-value { font-size: 0.875rem; font-weight: 700; color: var(--gold); }
+  .stat-track { background: rgba(255,255,255,0.08); border-radius: 9999px; overflow: hidden; height: 0.5rem; }
+  .stat-fill {
+    height: 100%; border-radius: 9999px;
+    background: linear-gradient(90deg, var(--red), var(--gold));
+    transition: width 1s ease-out; width: 0;
+  }
+  .grade-card {
+    display: flex; align-items: center; gap: 1rem; padding: 1rem;
+    border-radius: 0.75rem;
+  }
+  .grade-badge {
+    width: 3rem; height: 3rem; border-radius: 0.75rem;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 1.125rem; flex-shrink: 0;
+  }
+  .grade-label { font-weight: 700; font-size: 0.875rem; color: #e5e7eb; }
+  .grade-desc { font-size: 0.75rem; color: #6b7280; margin-top: 0.125rem; }
+
+  /* Quotes */
+  .quote-carousel {
+    padding: 2rem; text-align: center; position: relative; overflow: hidden;
+  }
+  .quote-deco {
+    position: absolute; font-size: 3.75rem; opacity: 0.1; font-family: serif; color: var(--gold);
+  }
+  .quote-deco.top { top: 1rem; left: 1.5rem; }
+  .quote-deco.bottom { bottom: 1rem; right: 1.5rem; transform: rotate(180deg); }
+  .quote-text-ja { font-size: 1.125rem; line-height: 1.8; color: #f3f4f6; margin-bottom: 1rem; transition: opacity 0.3s; }
+  .quote-text-en { font-size: 0.875rem; color: #6b7280; font-style: italic; transition: opacity 0.3s; }
+  .quote-nav { display: flex; justify-content: center; gap: 1rem; margin-top: 1.5rem; align-items: center; }
+  .quote-arrow {
+    width: 2.5rem; height: 2.5rem; border-radius: 50%;
+    border: 1px solid #a16207; color: #ca8a04; background: none;
+    cursor: pointer; font-size: 1.25rem; display: flex; align-items: center; justify-content: center;
+    transition: background 0.3s; font-family: inherit;
+  }
+  .quote-arrow:hover { background: rgba(120, 53, 15, 0.3); }
+  .quote-dots { display: flex; gap: 0.25rem; align-items: center; }
+  .quote-dot {
+    width: 0.5rem; height: 0.5rem; border-radius: 9999px; border: none;
+    background: #4b5563; cursor: pointer; padding: 0; transition: all 0.3s;
+  }
+  .quote-dot.active { background: var(--red); width: 1rem; }
+  .quote-list { margin-top: 1.5rem; display: grid; gap: 1rem; }
+  .quote-item { padding: 1.25rem; border-radius: 0.75rem; }
+  .quote-item-text { font-size: 0.875rem; color: #e5e7eb; line-height: 1.8; }
+
+  /* Footer */
+  footer {
+    position: relative; z-index: 10; text-align: center; padding: 2.5rem 0;
+    border-top: 1px solid rgba(255,255,255,0.05);
+  }
+  .footer-suits { font-size: 1.5rem; margin-bottom: 0.5rem; }
+  .footer-copy { font-size: 0.75rem; color: #374151; }
+  .footer-fan { font-size: 0.75rem; color: #1f2937; margin-top: 0.25rem; }
+
+  /* Utility */
+  .space-y > * + * { margin-top: 1.25rem; }
+  .space-y-sm > * + * { margin-top: 1rem; }
 </style>
 </head>
 <body>
-<div id="root"></div>
 
-<script type="text/babel">
-const { useState, useEffect, useRef } = React;
+<!-- Suit Background -->
+<div class="suit-bg" id="suitBg"></div>
 
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-content">
+    <div class="suit-deco">
+      <span class="animate-float" style="color:var(--gold)">♠</span>
+      <span class="animate-float" style="color:var(--red); animation-delay:0.2s">♦</span>
+      <span class="animate-float" style="color:var(--gold); animation-delay:0.4s">♥</span>
+      <span class="animate-float" style="color:var(--red); animation-delay:0.6s">♣</span>
+    </div>
+    <div class="badge">HUNTER × HUNTER</div>
+    <h1><span class="gradient-text">HISOKA</span></h1>
+    <p class="subtitle">ヒソカ＝モロウ</p>
+    <p class="sub2">MOROW</p>
+    <div class="tags">
+      <span class="tag">奇術師</span>
+      <span class="tag">変化系</span>
+      <span class="tag">元No.4</span>
+      <span class="tag">戦闘狂</span>
+    </div>
+  </div>
+</div>
+
+<!-- Tabs -->
+<div class="tab-bar">
+  <div class="tab-inner">
+    <button class="tab-btn active" data-tab="profile">♠ プロフィール</button>
+    <button class="tab-btn" data-tab="abilities">♦ 能力</button>
+    <button class="tab-btn" data-tab="stats">♥ ステータス</button>
+    <button class="tab-btn" data-tab="quotes">♣ 名言</button>
+  </div>
+</div>
+
+<!-- Content -->
+<div class="content">
+
+  <!-- Profile -->
+  <div class="tab-content active animate-fade-in" id="tab-profile">
+    <div class="grid-2">
+      <div class="hisoka-card" style="padding:1.5rem">
+        <h2 class="section-title"><span>♠</span> 基本プロフィール</h2>
+        <div id="profileList"></div>
+      </div>
+      <div class="space-y">
+        <div class="hisoka-card" style="padding:1.5rem">
+          <h2 class="section-title"><span>♦</span> キャラクター概要</h2>
+          <p class="overview-text">
+            ヒソカ＝モロウは、『HUNTER×HUNTER』に登場するキャラクター。
+            奇術師を自称し、戦闘に異常なまでの快楽を見出す謎多き男。
+            強者との闘いを極度に好み、潜在能力の高い者を「未熟な果実」として育てる習性を持つ。
+          </p>
+        </div>
+        <div class="exam-card">
+          <p class="exam-label">HUNTER EXAM 第四次試験</p>
+          <p class="exam-value gradient-text">通過</p>
+          <p class="exam-sub">単独実力突破</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Abilities -->
+  <div class="tab-content" id="tab-abilities">
+    <div class="space-y" id="abilitiesList"></div>
+  </div>
+
+  <!-- Stats -->
+  <div class="tab-content" id="tab-stats">
+    <div class="grid-2">
+      <div class="hisoka-card" style="padding:1.5rem">
+        <h2 class="section-title"><span>♥</span> 戦闘ステータス</h2>
+        <div id="statsList"></div>
+      </div>
+      <div class="space-y-sm" id="gradesList"></div>
+    </div>
+  </div>
+
+  <!-- Quotes -->
+  <div class="tab-content" id="tab-quotes">
+    <div class="hisoka-card quote-carousel" id="quoteCarousel"></div>
+    <div class="quote-list" id="quoteList"></div>
+  </div>
+
+</div>
+
+<!-- Footer -->
+<footer>
+  <p class="footer-suits">♠ ♦ ♥ ♣</p>
+  <p class="footer-copy">HUNTER × HUNTER © Yoshihiro Togashi / Shueisha</p>
+  <p class="footer-fan">Fan-made tribute page</p>
+</footer>
+
+<script>
 // ── Data ──────────────────────────────────────────────────
-const QUOTES = [
+var QUOTES = [
   { ja: "キミの敗因は容量（メモリ）のムダ使い♥", en: "Your downfall was the waste of your memory capacity." },
   { ja: "今のキミはボクに生かされている。キミがもっと殺しがいのある使い手に育つまで、キミはずっとボクに生かされているのだよ♠", en: "Right now, you are kept alive by me. Until you grow into a fighter worth killing, you will always owe your life to me." },
   { ja: "無駄な努力、御苦労様♠", en: "Wasted effort. Thanks for the hard work." },
   { ja: "ちなみにボクは変化系♦ 気まぐれでウソつき♠", en: "By the way, I'm a Transmuter. Whimsical and a liar." },
-  { ja: "やっぱり便利…♥ ボクの"薄っぺらな嘘（ドッキリテクスチャー）"♥♥", en: "So convenient after all... My 'Texture Surprise'." },
+  { ja: "やっぱり便利…♥ ボクの\u201C薄っぺらな嘘（ドッキリテクスチャー）\u201D♥♥", en: "So convenient after all... My 'Texture Surprise'." },
 ];
 
-const STATS = [
+var STATS = [
   { label: "念能力", value: 97, icon: "♦" },
   { label: "戦闘力", value: 99, icon: "♠" },
   { label: "知性", value: 85, icon: "♥" },
@@ -90,24 +342,22 @@ const STATS = [
   { label: "残虐性", value: 96, icon: "♦" },
 ];
 
-const ABILITIES = [
+var ABILITIES = [
   {
     name: "伸縮自在の愛（バンジーガム）",
     type: "変化系",
     desc: "自身のオーラにゴムとガム両方の性質を持たせる変化系能力。伸縮自在に伸び縮みし、あらゆるものに付着させることができる。攻防一体の万能能力で、ヒソカの戦闘スタイルの核。",
-    color: "from-red-700 to-red-900",
-    icon: "♦"
+    colorClass: "red"
   },
   {
     name: "薄っぺらな嘘（ドッキリテクスチャー）",
     type: "変化系",
     desc: "オーラを変化させ、薄い物体の表面にあらゆる質感・模様を再現する能力。幻影旅団の蜘蛛の刺青を偽装したり、切断された腕を繋がっているように見せかけるなど、欺瞞に特化した能力。",
-    color: "from-yellow-700 to-yellow-900",
-    icon: "♠"
+    colorClass: "yellow"
   },
 ];
 
-const PROFILE = [
+var PROFILE = [
   { label: "本名", value: "ヒソカ＝モロウ" },
   { label: "所属", value: "元幻影旅団 No.4（偽装入団）" },
   { label: "念の系統", value: "変化系" },
@@ -119,285 +369,198 @@ const PROFILE = [
   { label: "出身", value: "不明" },
 ];
 
-// ── Components ────────────────────────────────────────────
-function SuitBackground() {
-  const suits = ['♠','♥','♦','♣'];
-  const items = Array.from({length:18},(_,i) => ({
-    suit: suits[i%4],
-    left: `${5 + i*5.5}%`,
-    delay: `${(i * 1.1).toFixed(1)}s`,
-    duration: `${10 + (i % 7) * 2}s`,
-    size: `${1 + (i % 3) * 0.5}rem`,
-  }));
-  return (
-    <div className="suit-bg">
-      {items.map((item, i) => (
-        <span key={i} className="suit-item" style={{
-          left: item.left, top: '-80px', animationDelay: item.delay,
-          animationDuration: item.duration, fontSize: item.size,
-          color: i % 2 === 0 ? '#d4a017' : '#c0392b',
-        }}>{item.suit}</span>
-      ))}
-    </div>
-  );
+var GRADES = [
+  { label: '殺傷能力', grade: 'S', desc: '幻影旅団を単独で壊滅させうる実力', color: '#c0392b' },
+  { label: '念の習熟度', grade: 'S+', desc: 'バンジーガムで変化系トップクラス', color: '#d4a017' },
+  { label: '格闘技術', grade: 'S', desc: '近接・遠距離どちらも超一流', color: '#c0392b' },
+  { label: '精神的脅威度', grade: 'EX', desc: '読めない行動原理で相手を翻弄', color: '#8b5cf6' },
+];
+
+// ── Suit Background ──────────────────────────────────────
+(function() {
+  var suits = ['♠','♥','♦','♣'];
+  var bg = document.getElementById('suitBg');
+  for (var i = 0; i < 18; i++) {
+    var span = document.createElement('span');
+    span.className = 'suit-item';
+    span.textContent = suits[i % 4];
+    span.style.left = (5 + i * 5.5) + '%';
+    span.style.top = '-80px';
+    span.style.animationDelay = (i * 1.1).toFixed(1) + 's';
+    span.style.animationDuration = (10 + (i % 7) * 2) + 's';
+    span.style.fontSize = (1 + (i % 3) * 0.5) + 'rem';
+    span.style.color = i % 2 === 0 ? 'var(--gold)' : 'var(--red)';
+    bg.appendChild(span);
+  }
+})();
+
+// ── Tabs ─────────────────────────────────────────────────
+(function() {
+  var btns = document.querySelectorAll('.tab-btn');
+  btns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      btns.forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      document.querySelectorAll('.tab-content').forEach(function(tc) { tc.classList.remove('active'); });
+      var target = document.getElementById('tab-' + btn.getAttribute('data-tab'));
+      if (target) { target.classList.add('active'); target.classList.add('animate-fade-in'); }
+
+      // Animate stat bars when stats tab is shown
+      if (btn.getAttribute('data-tab') === 'stats') { animateStats(); }
+    });
+  });
+})();
+
+// ── Profile ──────────────────────────────────────────────
+(function() {
+  var el = document.getElementById('profileList');
+  PROFILE.forEach(function(p) {
+    var div = document.createElement('div');
+    div.className = 'profile-row';
+    div.innerHTML = '<span class="profile-label">' + p.label + '</span><span class="profile-value">' + p.value + '</span>';
+    el.appendChild(div);
+  });
+})();
+
+// ── Abilities ────────────────────────────────────────────
+(function() {
+  var el = document.getElementById('abilitiesList');
+  var icons = ['♦', '♠'];
+  ABILITIES.forEach(function(ab, i) {
+    var card = document.createElement('div');
+    card.className = 'hisoka-card';
+    card.style.overflow = 'hidden';
+    card.innerHTML =
+      '<div class="ability-header ' + ab.colorClass + '">' +
+        '<span class="ability-icon">' + icons[i] + '</span>' +
+        '<div><div class="ability-name">' + ab.name + '</div>' +
+        '<div class="ability-type">' + ab.type + '</div></div>' +
+      '</div>' +
+      '<div class="ability-desc">' + ab.desc + '</div>';
+    el.appendChild(card);
+  });
+
+  // Quote card
+  var quoteCard = document.createElement('div');
+  quoteCard.className = 'ability-quote-card';
+  quoteCard.innerHTML =
+    '<p class="ability-quote-icon">♦</p>' +
+    '<p class="ability-quote-text">' +
+      '「伸縮自在の愛（バンジーガム）」にはゴムとガム両方の性質がある♠<br>' +
+      '<span class="ability-quote-author">— ヒソカ</span>' +
+    '</p>';
+  el.appendChild(quoteCard);
+})();
+
+// ── Stats ────────────────────────────────────────────────
+(function() {
+  var el = document.getElementById('statsList');
+  STATS.forEach(function(s, i) {
+    var div = document.createElement('div');
+    div.className = 'stat-bar-wrap';
+    div.innerHTML =
+      '<div class="stat-bar-header">' +
+        '<span class="stat-bar-label">' + s.icon + ' ' + s.label + '</span>' +
+        '<span class="stat-bar-value">' + s.value + '</span>' +
+      '</div>' +
+      '<div class="stat-track"><div class="stat-fill" data-value="' + s.value + '" data-delay="' + (i * 150) + '"></div></div>';
+    el.appendChild(div);
+  });
+
+  var gel = document.getElementById('gradesList');
+  GRADES.forEach(function(g) {
+    var div = document.createElement('div');
+    div.className = 'hisoka-card grade-card';
+    div.innerHTML =
+      '<div class="grade-badge" style="background:' + g.color + '22;color:' + g.color + ';border:1px solid ' + g.color + '44">' + g.grade + '</div>' +
+      '<div><p class="grade-label">' + g.label + '</p><p class="grade-desc">' + g.desc + '</p></div>';
+    gel.appendChild(div);
+  });
+})();
+
+function animateStats() {
+  document.querySelectorAll('.stat-fill').forEach(function(bar) {
+    bar.style.width = '0';
+    var v = bar.getAttribute('data-value');
+    var d = parseInt(bar.getAttribute('data-delay'), 10);
+    setTimeout(function() { bar.style.width = v + '%'; }, d);
+  });
 }
 
-function StatBar({ label, value, icon, delay }) {
-  const [width, setWidth] = useState(0);
-  useEffect(() => {
-    setTimeout(() => setWidth(value), delay);
-  }, []);
-  return (
-    <div className="mb-4">
-      <div className="flex justify-between items-center mb-1">
-        <span className="text-sm text-gray-300 font-jp">{icon} {label}</span>
-        <span className="text-sm font-bold" style={{color:'#d4a017'}}>{value}</span>
-      </div>
-      <div className="progress-track h-2">
-        <div className="ability-bar h-2 rounded-full transition-all duration-1000 ease-out"
-          style={{width: `${width}%`}} />
-      </div>
-    </div>
-  );
-}
+// ── Quote Carousel ───────────────────────────────────────
+(function() {
+  var idx = 0;
+  var carouselEl = document.getElementById('quoteCarousel');
+  var listEl = document.getElementById('quoteList');
 
-function QuoteCarousel() {
-  const [idx, setIdx] = useState(0);
-  const [visible, setVisible] = useState(true);
-  const next = () => {
-    setVisible(false);
-    setTimeout(() => { setIdx(i => (i+1) % QUOTES.length); setVisible(true); }, 300);
-  };
-  const prev = () => {
-    setVisible(false);
-    setTimeout(() => { setIdx(i => (i-1+QUOTES.length) % QUOTES.length); setVisible(true); }, 300);
-  };
-  return (
-    <div className="hisoka-card rounded-2xl p-8 text-center relative overflow-hidden">
-      <div className="absolute top-4 left-6 text-6xl opacity-10 font-serif" style={{color:'#d4a017'}}>"</div>
-      <div className="absolute bottom-4 right-6 text-6xl opacity-10 font-serif rotate-180" style={{color:'#d4a017'}}>"</div>
-      <div className="transition-opacity duration-300 relative z-10" style={{opacity: visible ? 1 : 0}}>
-        <p className="text-lg leading-relaxed text-gray-100 font-jp mb-4">{QUOTES[idx].ja}</p>
-        <p className="text-sm text-gray-500 italic">{QUOTES[idx].en}</p>
-      </div>
-      <div className="flex justify-center gap-4 mt-6">
-        <button onClick={prev}
-          className="w-10 h-10 rounded-full border border-yellow-700 text-yellow-600 hover:bg-yellow-900/30 transition-all flex items-center justify-center">
-          ‹
-        </button>
-        <div className="flex gap-1 items-center">
-          {QUOTES.map((_,i) => (
-            <button key={i} onClick={() => setIdx(i)}
-              className={`w-2 h-2 rounded-full transition-all ${i===idx ? 'bg-red-600 w-4' : 'bg-gray-600'}`} />
-          ))}
-        </div>
-        <button onClick={next}
-          className="w-10 h-10 rounded-full border border-yellow-700 text-yellow-600 hover:bg-yellow-900/30 transition-all flex items-center justify-center">
-          ›
-        </button>
-      </div>
-    </div>
-  );
-}
+  function renderCarousel() {
+    carouselEl.innerHTML =
+      '<div class="quote-deco top">\u201C</div>' +
+      '<div class="quote-deco bottom">\u201C</div>' +
+      '<p class="quote-text-ja" id="quoteJa">' + QUOTES[idx].ja + '</p>' +
+      '<p class="quote-text-en" id="quoteEn">' + QUOTES[idx].en + '</p>' +
+      '<div class="quote-nav">' +
+        '<button class="quote-arrow" id="quotePrev">\u2039</button>' +
+        '<div class="quote-dots" id="quoteDots"></div>' +
+        '<button class="quote-arrow" id="quoteNext">\u203A</button>' +
+      '</div>';
 
-function App() {
-  const [activeTab, setActiveTab] = useState('profile');
-  const tabs = [
-    { id: 'profile', label: '♠ プロフィール' },
-    { id: 'abilities', label: '♦ 能力' },
-    { id: 'stats', label: '♥ ステータス' },
-    { id: 'quotes', label: '♣ 名言' },
-  ];
+    var dotsEl = document.getElementById('quoteDots');
+    for (var i = 0; i < QUOTES.length; i++) {
+      var dot = document.createElement('button');
+      dot.className = 'quote-dot' + (i === idx ? ' active' : '');
+      dot.setAttribute('data-i', i);
+      dot.addEventListener('click', function() {
+        idx = parseInt(this.getAttribute('data-i'), 10);
+        updateQuote();
+      });
+      dotsEl.appendChild(dot);
+    }
 
-  return (
-    <div className="min-h-screen text-white font-jp relative" style={{background:'#0a0a0a'}}>
-      <SuitBackground />
+    document.getElementById('quotePrev').addEventListener('click', function() {
+      idx = (idx - 1 + QUOTES.length) % QUOTES.length;
+      fadeAndUpdate();
+    });
+    document.getElementById('quoteNext').addEventListener('click', function() {
+      idx = (idx + 1) % QUOTES.length;
+      fadeAndUpdate();
+    });
+  }
 
-      {/* Hero */}
-      <div className="relative z-10 overflow-hidden" style={{background:'linear-gradient(180deg, #1a0505 0%, #0a0a0a 100%)'}}>
-        <div className="absolute inset-0" style={{background:'radial-gradient(ellipse at 50% 0%, rgba(192,57,43,0.15) 0%, transparent 60%)'}} />
-        <div className="max-w-4xl mx-auto px-6 py-20 text-center relative">
-          {/* Suit decoration */}
-          <div className="flex justify-center gap-8 mb-8 text-2xl opacity-40">
-            {['♠','♦','♥','♣'].map((s,i) => (
-              <span key={i} style={{color: i%2===0 ? '#d4a017' : '#c0392b', animationDelay:`${i*0.2}s`}}
-                className="animate-float inline-block">{s}</span>
-            ))}
-          </div>
+  function updateQuote() {
+    document.getElementById('quoteJa').textContent = QUOTES[idx].ja;
+    document.getElementById('quoteEn').textContent = QUOTES[idx].en;
+    var dots = document.querySelectorAll('.quote-dot');
+    dots.forEach(function(d, i) {
+      d.className = 'quote-dot' + (i === idx ? ' active' : '');
+    });
+  }
 
-          <div className="inline-block mb-6 px-4 py-1 rounded-full border text-xs tracking-widest"
-            style={{borderColor:'rgba(212,160,23,0.3)', color:'#d4a017', background:'rgba(212,160,23,0.05)'}}>
-            HUNTER × HUNTER
-          </div>
+  function fadeAndUpdate() {
+    var ja = document.getElementById('quoteJa');
+    var en = document.getElementById('quoteEn');
+    ja.style.opacity = '0';
+    en.style.opacity = '0';
+    setTimeout(function() {
+      updateQuote();
+      ja.style.opacity = '1';
+      en.style.opacity = '1';
+    }, 300);
+  }
 
-          <h1 className="text-6xl md:text-8xl font-black mb-4 leading-none tracking-tight">
-            <span className="gradient-text">HISOKA</span>
-          </h1>
-          <p className="text-2xl text-gray-400 mb-2 font-light tracking-widest">ヒソカ＝モロウ</p>
-          <p className="text-sm text-gray-600 tracking-widest">MOROW</p>
+  renderCarousel();
 
-          <div className="flex justify-center gap-3 mt-8 flex-wrap">
-            {['奇術師', '変化系', '元No.4', '戦闘狂'].map((tag,i) => (
-              <span key={i} className="px-3 py-1 rounded-full text-xs border"
-                style={{borderColor:'rgba(192,57,43,0.4)', color:'#ef9e9e', background:'rgba(192,57,43,0.08)'}}>
-                {tag}
-              </span>
-            ))}
-          </div>
-        </div>
-      </div>
+  // Quote list
+  QUOTES.forEach(function(q) {
+    var div = document.createElement('div');
+    div.className = 'hisoka-card quote-item';
+    div.innerHTML = '<p class="quote-item-text">' + q.ja + '</p>';
+    listEl.appendChild(div);
+  });
+})();
 
-      {/* Tabs */}
-      <div className="relative z-10 sticky top-0"
-        style={{background:'rgba(10,10,10,0.95)', backdropFilter:'blur(12px)', borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
-        <div className="max-w-4xl mx-auto px-6">
-          <div className="flex gap-0 overflow-x-auto">
-            {tabs.map(tab => (
-              <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-                className={`px-5 py-4 text-sm font-bold whitespace-nowrap transition-all border-b-2 ${
-                  activeTab === tab.id
-                    ? 'border-red-600 text-red-400'
-                    : 'border-transparent text-gray-500 hover:text-gray-300'
-                }`}>
-                {tab.label}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="relative z-10 max-w-4xl mx-auto px-6 py-12">
-
-        {/* Profile */}
-        {activeTab === 'profile' && (
-          <div className="animate-fade-in grid md:grid-cols-2 gap-6">
-            <div className="hisoka-card rounded-2xl p-6">
-              <h2 className="text-lg font-bold mb-6 flex items-center gap-2" style={{color:'#d4a017'}}>
-                <span>♠</span> 基本プロフィール
-              </h2>
-              <div className="space-y-3">
-                {PROFILE.map(({ label, value }) => (
-                  <div key={label} className="flex justify-between items-center py-2"
-                    style={{borderBottom:'1px solid rgba(255,255,255,0.05)'}}>
-                    <span className="text-xs text-gray-500 tracking-wider">{label}</span>
-                    <span className="text-sm text-gray-200 font-medium">{value}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="space-y-5">
-              <div className="hisoka-card rounded-2xl p-6">
-                <h2 className="text-lg font-bold mb-4 flex items-center gap-2" style={{color:'#d4a017'}}>
-                  <span>♦</span> キャラクター概要
-                </h2>
-                <p className="text-sm text-gray-400 leading-relaxed">
-                  ヒソカ・モロウは、『HUNTER×HUNTER』に登場するキャラクター。
-                  マジシャンを自称し、戦闘に異常なまでの快楽を見出す謎多き男。
-                  強者との闘いを極度に好み、潜在能力の高い者を「未熟な果実」として育てる習性を持つ。
-                </p>
-              </div>
-
-              <div className="hisoka-card rounded-2xl p-6"
-                style={{background:'linear-gradient(135deg, rgba(192,57,43,0.1), rgba(212,160,23,0.05))'}}>
-                <h2 className="text-sm font-bold mb-3 text-gray-400 tracking-widest">HUNTER EXAM 第四次試験</h2>
-                <p className="text-3xl font-black gradient-text">通過</p>
-                <p className="text-xs text-gray-600 mt-1">単独実力突破</p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Abilities */}
-        {activeTab === 'abilities' && (
-          <div className="animate-fade-in space-y-6">
-            {ABILITIES.map((ab, i) => (
-              <div key={i} className="hisoka-card rounded-2xl overflow-hidden">
-                <div className={`bg-gradient-to-r ${ab.color} p-4 flex items-center gap-3`}>
-                  <span className="text-2xl">{ab.icon}</span>
-                  <div>
-                    <h3 className="text-xl font-black">{ab.name}</h3>
-                    <span className="text-xs opacity-75 tracking-wider">{ab.type}</span>
-                  </div>
-                </div>
-                <div className="p-6">
-                  <p className="text-gray-300 text-sm leading-relaxed">{ab.desc}</p>
-                </div>
-              </div>
-            ))}
-
-            <div className="hisoka-card rounded-2xl p-6 text-center"
-              style={{background:'linear-gradient(135deg, rgba(212,160,23,0.06), rgba(192,57,43,0.06))'}}>
-              <p className="text-4xl mb-3">♦</p>
-              <p className="text-sm text-gray-500 leading-relaxed">
-                「伸縮自在の愛（バンジーガム）」にはゴムとガム両方の性質がある♠<br/>
-                <span className="text-gray-300 italic">— ヒソカ</span>
-              </p>
-            </div>
-          </div>
-        )}
-
-        {/* Stats */}
-        {activeTab === 'stats' && (
-          <div className="animate-fade-in grid md:grid-cols-2 gap-6">
-            <div className="hisoka-card rounded-2xl p-6">
-              <h2 className="text-lg font-bold mb-6 flex items-center gap-2" style={{color:'#d4a017'}}>
-                <span>♥</span> 戦闘ステータス
-              </h2>
-              {STATS.map((s, i) => (
-                <StatBar key={s.label} {...s} delay={i * 150} />
-              ))}
-            </div>
-
-            <div className="space-y-4">
-              {[
-                { label: '殺傷能力', grade: 'S', desc: '幻影旅団を単独で壊滅させうる実力', color: '#c0392b' },
-                { label: '念の習熟度', grade: 'S+', desc: 'バンジーガムで変化系トップクラス', color: '#d4a017' },
-                { label: '格闘技術', grade: 'S', desc: '近接・遠距離どちらも超一流', color: '#c0392b' },
-                { label: '精神的脅威度', grade: 'EX', desc: '読めない行動原理で相手を翻弄', color: '#8b5cf6' },
-              ].map((item, i) => (
-                <div key={i} className="hisoka-card rounded-xl p-4 flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl flex items-center justify-center font-black text-lg flex-shrink-0"
-                    style={{background:`${item.color}22`, color:item.color, border:`1px solid ${item.color}44`}}>
-                    {item.grade}
-                  </div>
-                  <div>
-                    <p className="font-bold text-sm text-gray-200">{item.label}</p>
-                    <p className="text-xs text-gray-500 mt-0.5">{item.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Quotes */}
-        {activeTab === 'quotes' && (
-          <div className="animate-fade-in">
-            <QuoteCarousel />
-            <div className="mt-6 grid gap-4">
-              {QUOTES.map((q, i) => (
-                <div key={i} className="hisoka-card rounded-xl p-5">
-                  <p className="text-gray-200 text-sm leading-relaxed font-jp">{q.ja}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Footer */}
-      <footer className="relative z-10 text-center py-10 border-t" style={{borderColor:'rgba(255,255,255,0.05)'}}>
-        <p className="text-2xl mb-2">♠ ♦ ♥ ♣</p>
-        <p className="text-xs text-gray-700">HUNTER × HUNTER © Yoshihiro Togashi / Shueisha</p>
-        <p className="text-xs text-gray-800 mt-1">Fan-made tribute page</p>
-      </footer>
-    </div>
-  );
-}
-
-ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+// Initial stat animation
+setTimeout(animateStats, 100);
 </script>
 </body>
 </html>
