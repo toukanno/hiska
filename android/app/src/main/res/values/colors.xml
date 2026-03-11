@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="hisoka_red">#c0392b</color>
+    <color name="hisoka_gold">#d4a017</color>
+    <color name="hisoka_dark">#0a0a0a</color>
+    <color name="hisoka_card">#141414</color>
+</resources>
