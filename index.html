@@ -420,6 +420,48 @@ function App() {
         )}
       </div>
 
+      {/* Phantom Troupe Members */}
+      <div className="relative z-10 max-w-4xl mx-auto px-6 py-12">
+        <div className="text-center mb-10">
+          <div className="inline-block mb-4 px-4 py-1 rounded-full border text-xs tracking-widest"
+            style={{borderColor:'rgba(212,160,23,0.3)', color:'#d4a017', background:'rgba(212,160,23,0.05)'}}>
+            PHANTOM TROUPE — 幻影旅団
+          </div>
+          <h2 className="text-3xl md:text-4xl font-black gradient-text mb-2">旅団メンバー</h2>
+          <p className="text-sm text-gray-600">各メンバーのページへアクセス</p>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          {[
+            { name: 'クロロ＝ルシルフル', num: 'No.0', role: '団長', file: 'chrollo.html', color: '#7c3aed' },
+            { name: 'ノブナガ＝ハザマ', num: 'No.1', role: '居合の達人', file: 'nobunaga.html', color: '#3b82f6' },
+            { name: 'フェイタン＝ポートオ', num: 'No.2', role: '拷問担当', file: 'feitan.html', color: '#dc2626' },
+            { name: 'マチ＝コマチネ', num: 'No.3', role: '念糸使い', file: 'machi.html', color: '#ec4899' },
+            { name: 'カルト＝ゾルディック', num: 'No.4', role: '暗殺者', file: 'kalluto.html', color: '#8b5cf6' },
+            { name: 'フィンクス＝マグカブ', num: 'No.5', role: 'パワータイプ', file: 'phinks.html', color: '#f59e0b' },
+            { name: 'シャルナーク', num: 'No.6 ✝', role: '情報担当', file: 'shalnark.html', color: '#10b981' },
+            { name: 'フランクリン＝ボルドー', num: 'No.7', role: '重火力', file: 'franklin.html', color: '#059669' },
+            { name: 'シズク＝ムラサキ', num: 'No.8', role: 'デメちゃん使い', file: 'shizuku.html', color: '#7c3aed' },
+            { name: 'パクノダ', num: 'No.9 ✝', role: '記憶読み', file: 'pakunoda.html', color: '#6366f1' },
+            { name: 'ボノレノフ＝ンドンゴ', num: 'No.10', role: '戦闘舞踊', file: 'bonolenov.html', color: '#92400e' },
+            { name: 'ウボォーギン', num: 'No.11 ✝', role: '最強の拳', file: 'uvogin.html', color: '#ea580c' },
+            { name: 'コルトピ＝トノフメイル', num: 'No.12 ✝', role: 'コピー能力', file: 'kortopi.html', color: '#6b7280' },
+          ].map((member, i) => (
+            <a key={i} href={member.file} className="hisoka-card rounded-xl p-4 block group cursor-pointer">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg flex items-center justify-center font-black text-xs flex-shrink-0"
+                  style={{background:`${member.color}22`, color: member.color, border:`1px solid ${member.color}44`}}>
+                  {member.num.replace(' ✝', '')}
+                </div>
+                <div className="min-w-0">
+                  <p className="font-bold text-sm text-gray-200 truncate group-hover:text-white transition-colors">{member.name}</p>
+                  <p className="text-xs text-gray-500">{member.role}</p>
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+
       {/* Ad: Footer Banner */}
       <div className="relative z-10 max-w-4xl mx-auto px-6">
         <AdBanner slot="XXXXXXXXXX" format="horizontal" />
