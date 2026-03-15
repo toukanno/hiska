@@ -121,6 +121,28 @@ const PROFILE = [
   { label: "出身", value: "不明" },
 ];
 
+const UVOGIN_PROFILE = [
+  { label: "本名", value: "ウヴォーギン" },
+  { label: "所属", value: "幻影旅団 No.11" },
+  { label: "念の系統", value: "強化系" },
+  { label: "身長", value: "不明（巨躯）" },
+  { label: "特性", value: "圧倒的フィジカル" },
+];
+
+const UVOGIN_STATS = [
+  { label: "破壊力", value: 100, icon: "💥" },
+  { label: "防御力", value: 98, icon: "🛡️" },
+  { label: "耐久力", value: 97, icon: "🦍" },
+  { label: "スピード", value: 82, icon: "⚡" },
+  { label: "威圧感", value: 100, icon: "👊" },
+];
+
+const UVOGIN_QUOTES = [
+  "オレは生まれついての強化系だ！！",
+  "正面からぶっ壊す、それが一番早ぇ。",
+  "陰獣？ まとめて来いよ。",
+];
+
 // ── Ad Component ──────────────────────────────────────────
 function AdBanner({ slot, format = "auto", className = "" }) {
   const adRef = useRef(null);
@@ -229,6 +251,7 @@ function QuoteCarousel() {
 }
 
 function App() {
+  const [activePage, setActivePage] = useState('hisoka');
   const [activeTab, setActiveTab] = useState('profile');
   const tabs = [
     { id: 'profile', label: '♠ プロフィール' },
@@ -240,6 +263,34 @@ function App() {
   return (
     <div className="min-h-screen text-white font-jp relative" style={{background:'#0a0a0a'}}>
       <SuitBackground />
+
+      <div className="relative z-20 sticky top-0" style={{background:'rgba(8,8,8,0.92)', backdropFilter:'blur(10px)', borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
+        <div className="max-w-4xl mx-auto px-6 py-3 flex justify-center gap-3">
+          <button
+            onClick={() => { setActivePage('hisoka'); setActiveTab('profile'); }}
+            className={`px-4 py-2 rounded-full text-xs font-bold tracking-wider transition-all border ${
+              activePage === 'hisoka'
+                ? 'text-red-300 border-red-500 bg-red-900/20'
+                : 'text-gray-400 border-gray-700 hover:text-gray-200'
+            }`}
+          >
+            HISOKA PAGE
+          </button>
+          <button
+            onClick={() => setActivePage('uvogin')}
+            className={`px-4 py-2 rounded-full text-xs font-bold tracking-wider transition-all border ${
+              activePage === 'uvogin'
+                ? 'text-violet-200 border-violet-500 bg-violet-900/20'
+                : 'text-gray-400 border-gray-700 hover:text-gray-200'
+            }`}
+          >
+            UVOGIN PAGE
+          </button>
+        </div>
+      </div>
+
+      {activePage === 'hisoka' && (
+      <>
 
       {/* Hero */}
       <div className="relative z-10 overflow-hidden" style={{background:'linear-gradient(180deg, #1a0505 0%, #0a0a0a 100%)'}}>
@@ -431,6 +482,63 @@ function App() {
         <p className="text-xs text-gray-700">HUNTER × HUNTER © Yoshihiro Togashi / Shueisha</p>
         <p className="text-xs text-gray-800 mt-1">Fan-made tribute page</p>
       </footer>
+      </>
+      )}
+
+      {activePage === 'uvogin' && (
+        <div className="relative z-10 animate-fade-in">
+          <div className="overflow-hidden" style={{background:'linear-gradient(180deg, #140a1f 0%, #0a0a0a 100%)'}}>
+            <div className="max-w-4xl mx-auto px-6 py-20 text-center">
+              <p className="text-xs tracking-[0.3em] text-violet-300 mb-4">GENEI RYODAN</p>
+              <h1 className="text-5xl md:text-7xl font-black mb-4">
+                <span style={{color:'#c4b5fd'}}>UVOGIN</span>
+              </h1>
+              <p className="text-xl text-gray-300">ウヴォーギン</p>
+              <p className="text-sm text-gray-500 mt-4">「力でねじ伏せる」旅団随一のパワーファイター</p>
+            </div>
+          </div>
+
+          <div className="max-w-4xl mx-auto px-6 py-12 grid md:grid-cols-2 gap-6">
+            <div className="hisoka-card rounded-2xl p-6">
+              <h2 className="text-lg font-bold mb-5 text-violet-300">基本プロフィール</h2>
+              <div className="space-y-3">
+                {UVOGIN_PROFILE.map(({ label, value }) => (
+                  <div key={label} className="flex justify-between items-center py-2"
+                    style={{borderBottom:'1px solid rgba(255,255,255,0.05)'}}>
+                    <span className="text-xs text-gray-500 tracking-wider">{label}</span>
+                    <span className="text-sm text-gray-200 font-medium">{value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="hisoka-card rounded-2xl p-6">
+              <h2 className="text-lg font-bold mb-5 text-violet-300">必殺技</h2>
+              <h3 className="text-2xl font-black text-gray-100 mb-2">超破壊拳（ビッグバンインパクト）</h3>
+              <p className="text-sm text-gray-400 leading-relaxed">
+                強化した拳による一点突破の超威力攻撃。クレーターを生むほどの破壊力を持ち、
+                シンプルながら「強化系」の真髄を体現する技として描かれる。
+              </p>
+            </div>
+
+            <div className="hisoka-card rounded-2xl p-6">
+              <h2 className="text-lg font-bold mb-6 text-violet-300">戦闘ステータス</h2>
+              {UVOGIN_STATS.map((s, i) => (
+                <StatBar key={s.label} {...s} delay={i * 120} />
+              ))}
+            </div>
+
+            <div className="hisoka-card rounded-2xl p-6">
+              <h2 className="text-lg font-bold mb-5 text-violet-300">名言</h2>
+              <div className="space-y-3">
+                {UVOGIN_QUOTES.map((q, i) => (
+                  <p key={i} className="text-sm text-gray-300 border-l-2 border-violet-400/50 pl-3">{q}</p>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
