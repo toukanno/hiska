@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Background circle -->
+    <path
+        android:fillColor="#0a0a0a"
+        android:pathData="M54,54m-54,0a54,54 0,1 1,108 0a54,54 0,1 1,-108 0" />
+    <!-- Spade suit symbol ♠ -->
+    <path
+        android:fillColor="#c0392b"
+        android:pathData="M54,22 C54,22 38,38 38,48 C38,54 44,58 50,56 L48,66 L60,66 L58,56 C64,58 70,54 70,48 C70,38 54,22 54,22Z" />
+    <!-- Diamond suit symbol ♦ -->
+    <path
+        android:fillColor="#d4a017"
+        android:pathData="M54,70 L48,80 L54,90 L60,80Z" />
+</vector>
