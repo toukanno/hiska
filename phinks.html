@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>フィンクス＝マグカブ — 幻影旅団 No.5</title>
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          chara: { primary: '#f59e0b', accent: '#fcd34d', dark: '#0a0a0a', card: '#141414' },
+        },
+        fontFamily: { jp: ['"Noto Serif JP"', 'serif'] },
+        animation: {
+          'fade-in': 'fadeIn 0.8s ease forwards',
+          'float': 'float 3s ease-in-out infinite',
+        },
+        keyframes: {
+          fadeIn: { from: { opacity: 0 }, to: { opacity: 1 } },
+          float: { '0%,100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-10px)' } },
+        },
+      }
+    }
+  }
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;700;900&display=swap" rel="stylesheet">
+<style>
+  body { background-color: #0a0a0a; }
+  .gradient-text {
+    background: linear-gradient(135deg, #fcd34d, #f59e0b, #fcd34d);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    background-size: 200% auto; animation: shimmer 3s linear infinite;
+  }
+  @keyframes shimmer { to { background-position: 200% center; } }
+  .chara-card {
+    background: linear-gradient(145deg, #1a1a1a, #141414);
+    border: 1px solid rgba(245,158,11,0.2); transition: all 0.3s ease;
+  }
+  .chara-card:hover {
+    border-color: rgba(245,158,11,0.6); transform: translateY(-4px);
+    box-shadow: 0 10px 40px rgba(245,158,11,0.2);
+  }
+  .suit-bg { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+  .suit-item { position: absolute; font-size: 1.5rem; opacity: 0.03; animation: driftDown linear infinite; }
+  @keyframes driftDown { from { transform: translateY(-80px) rotate(0deg); } to { transform: translateY(110vh) rotate(360deg); } }
+  .ability-bar { background: linear-gradient(90deg, #f59e0b, #fcd34d); }
+  .progress-track { background: rgba(255,255,255,0.08); border-radius: 9999px; overflow: hidden; }
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: #0a0a0a; }
+  ::-webkit-scrollbar-thumb { background: #f59e0b; border-radius: 2px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+const QUOTES = [
+  { ja: "腕を回した数に比例してパンチ力が上がる…！", en: "The power of my punch increases in proportion to the number of rotations...!" },
+  { ja: "団長の命令は絶対だ", en: "The boss's orders are absolute." },
+  { ja: "まだるっこしいんだよ！", en: "You're too slow about it!" },
+  { ja: "力こそ正義だ", en: "Power is justice." },
+];
+
+const STATS = [
+  { label: "念能力", value: 82, icon: "💪" },
+  { label: "戦闘力", value: 93, icon: "⚔" },
+  { label: "知性", value: 72, icon: "◈" },
+  { label: "スピード", value: 82, icon: "◇" },
+  { label: "パワー", value: 96, icon: "🔥" },
+];
+
+const ABILITIES = [
+  {
+    name: "廻天（リッパー・サイクロトロン）",
+    type: "強化系",
+    desc: "右腕を回転させることでパンチの威力を増幅させる強化系能力。腕を回した回数に比例して威力が上がり、理論上は無限にパワーを蓄積できる。シンプルだが極めて強力な能力で、キメラアント編では一撃で敵を粉砕する威力を見せた。",
+    color: "from-amber-600 to-amber-800",
+    icon: "💪"
+  },
+];
+
+const PROFILE = [
+  { label: "本名", value: "フィンクス＝マグカブ" },
+  { label: "所属", value: "幻影旅団 No.5" },
+  { label: "念の系統", value: "強化系" },
+  { label: "誕生日", value: "不明" },
+  { label: "血液型", value: "不明" },
+  { label: "身長", value: "185 cm" },
+  { label: "体重", value: "85 kg" },
+  { label: "出身", value: "流星街" },
+  { label: "外見", value: "エジプト風の衣装" },
+];
+
+function SymbolBackground() {
+  const symbols = ['💪','⚔','🔥','◈','★'];
+  const items = Array.from({length:18},(_,i) => ({
+    symbol: symbols[i%5], left: `${5 + i*5.5}%`,
+    delay: `${(i * 1.1).toFixed(1)}s`, duration: `${10 + (i % 7) * 2}s`, size: `${1 + (i % 3) * 0.5}rem`,
+  }));
+  return (
+    <div className="suit-bg">
+      {items.map((item, i) => (
+        <span key={i} className="suit-item" style={{ left: item.left, top: '-80px', animationDelay: item.delay, animationDuration: item.duration, fontSize: item.size, color: i % 2 === 0 ? '#f59e0b' : '#fcd34d' }}>{item.symbol}</span>
+      ))}
+    </div>
+  );
+}
+
+function StatBar({ label, value, icon, delay }) {
+  const [width, setWidth] = useState(0);
+  useEffect(() => { setTimeout(() => setWidth(value), delay); }, []);
+  return (
+    <div className="mb-4">
+      <div className="flex justify-between items-center mb-1">
+        <span className="text-sm text-gray-300 font-jp">{icon} {label}</span>
+        <span className="text-sm font-bold" style={{color:'#fcd34d'}}>{value}</span>
+      </div>
+      <div className="progress-track h-2">
+        <div className="ability-bar h-2 rounded-full transition-all duration-1000 ease-out" style={{width:`${width}%`}} />
+      </div>
+    </div>
+  );
+}
+
+function QuoteCarousel() {
+  const [idx, setIdx] = useState(0);
+  const [visible, setVisible] = useState(true);
+  const next = () => { setVisible(false); setTimeout(() => { setIdx(i => (i+1) % QUOTES.length); setVisible(true); }, 300); };
+  const prev = () => { setVisible(false); setTimeout(() => { setIdx(i => (i-1+QUOTES.length) % QUOTES.length); setVisible(true); }, 300); };
+  return (
+    <div className="chara-card rounded-2xl p-8 text-center relative overflow-hidden">
+      <div className="absolute top-4 left-6 text-6xl opacity-10 font-serif" style={{color:'#f59e0b'}}>"</div>
+      <div className="absolute bottom-4 right-6 text-6xl opacity-10 font-serif rotate-180" style={{color:'#f59e0b'}}>"</div>
+      <div className="transition-opacity duration-300 relative z-10" style={{opacity: visible ? 1 : 0}}>
+        <p className="text-lg leading-relaxed text-gray-100 font-jp mb-4">{QUOTES[idx].ja}</p>
+        <p className="text-sm text-gray-500 italic">{QUOTES[idx].en}</p>
+      </div>
+      <div className="flex justify-center gap-4 mt-6">
+        <button onClick={prev} className="w-10 h-10 rounded-full border border-amber-700 text-amber-400 hover:bg-amber-900/30 transition-all flex items-center justify-center">‹</button>
+        <div className="flex gap-1 items-center">
+          {QUOTES.map((_,i) => (<button key={i} onClick={() => setIdx(i)} className={`w-2 h-2 rounded-full transition-all ${i===idx ? 'bg-amber-500 w-4' : 'bg-gray-600'}`} />))}
+        </div>
+        <button onClick={next} className="w-10 h-10 rounded-full border border-amber-700 text-amber-400 hover:bg-amber-900/30 transition-all flex items-center justify-center">›</button>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [activeTab, setActiveTab] = useState('profile');
+  const tabs = [
+    { id: 'profile', label: '💪 プロフィール' },
+    { id: 'abilities', label: '🔥 能力' },
+    { id: 'stats', label: '◇ ステータス' },
+    { id: 'quotes', label: '★ 名言' },
+  ];
+
+  return (
+    <div className="min-h-screen text-white font-jp relative" style={{background:'#0a0a0a'}}>
+      <SymbolBackground />
+      <div className="relative z-10 max-w-4xl mx-auto px-6 pt-4">
+        <a href="index.html" className="text-sm text-gray-500 hover:text-amber-400 transition-colors">← トップページへ戻る</a>
+      </div>
+      <div className="relative z-10 overflow-hidden" style={{background:'linear-gradient(180deg, #1a1005 0%, #0a0a0a 100%)'}}>
+        <div className="absolute inset-0" style={{background:'radial-gradient(ellipse at 50% 0%, rgba(245,158,11,0.15) 0%, transparent 60%)'}} />
+        <div className="max-w-4xl mx-auto px-6 py-20 text-center relative">
+          <div className="flex justify-center gap-8 mb-8 text-2xl opacity-40">
+            {['💪','⚔','🔥','★'].map((s,i) => (
+              <span key={i} style={{color: i%2===0 ? '#f59e0b' : '#fcd34d', animationDelay:`${i*0.2}s`}} className="animate-float inline-block">{s}</span>
+            ))}
+          </div>
+          <div className="inline-block mb-6 px-4 py-1 rounded-full border text-xs tracking-widest"
+            style={{borderColor:'rgba(245,158,11,0.3)', color:'#fcd34d', background:'rgba(245,158,11,0.05)'}}>
+            PHANTOM TROUPE — No.5
+          </div>
+          <h1 className="text-6xl md:text-8xl font-black mb-4 leading-none tracking-tight">
+            <span className="gradient-text">PHINKS</span>
+          </h1>
+          <p className="text-2xl text-gray-400 mb-2 font-light tracking-widest">フィンクス＝マグカブ</p>
+          <p className="text-sm text-gray-600 tracking-widest">MAGCUB</p>
+          <div className="flex justify-center gap-3 mt-8 flex-wrap">
+            {['パワータイプ', '強化系', 'No.5', '流星街出身'].map((tag,i) => (
+              <span key={i} className="px-3 py-1 rounded-full text-xs border"
+                style={{borderColor:'rgba(245,158,11,0.4)', color:'#fde68a', background:'rgba(245,158,11,0.08)'}}>
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="relative z-10 sticky top-0" style={{background:'rgba(10,10,10,0.95)', backdropFilter:'blur(12px)', borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="flex gap-0 overflow-x-auto">
+            {tabs.map(tab => (
+              <button key={tab.id} onClick={() => setActiveTab(tab.id)}
+                className={`px-5 py-4 text-sm font-bold whitespace-nowrap transition-all border-b-2 ${
+                  activeTab === tab.id ? 'border-amber-500 text-amber-400' : 'border-transparent text-gray-500 hover:text-gray-300'
+                }`}>{tab.label}</button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="relative z-10 max-w-4xl mx-auto px-6 py-12">
+        {activeTab === 'profile' && (
+          <div className="animate-fade-in grid md:grid-cols-2 gap-6">
+            <div className="chara-card rounded-2xl p-6">
+              <h2 className="text-lg font-bold mb-6 flex items-center gap-2" style={{color:'#fcd34d'}}>
+                <span>💪</span> 基本プロフィール
+              </h2>
+              <div className="space-y-3">
+                {PROFILE.map(({ label, value }) => (
+                  <div key={label} className="flex justify-between items-center py-2" style={{borderBottom:'1px solid rgba(255,255,255,0.05)'}}>
+                    <span className="text-xs text-gray-500 tracking-wider">{label}</span>
+                    <span className="text-sm text-gray-200 font-medium">{value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="space-y-5">
+              <div className="chara-card rounded-2xl p-6">
+                <h2 className="text-lg font-bold mb-4 flex items-center gap-2" style={{color:'#fcd34d'}}>
+                  <span>◈</span> キャラクター概要
+                </h2>
+                <p className="text-sm text-gray-400 leading-relaxed">
+                  フィンクス＝マグカブは幻影旅団No.5のメンバー。エジプト風の衣装を身にまとい、短気で直情的な性格。旅団の中では武闘派に分類され、フェイタンと共に行動することが多い。腕を回転させることでパンチ力を増幅する「廻天」の使い手で、そのシンプルながらも強力な能力は旅団の戦闘力を大きく支えている。
+                </p>
+              </div>
+              <div className="chara-card rounded-2xl p-6" style={{background:'linear-gradient(135deg, rgba(245,158,11,0.1), rgba(252,211,77,0.05))'}}>
+                <h2 className="text-sm font-bold mb-3 text-gray-400 tracking-widest">腕相撲ランキング</h2>
+                <p className="text-3xl font-black gradient-text">旅団内 2位</p>
+                <p className="text-xs text-gray-600 mt-1">ウボォーに次ぐ腕力の持ち主</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'abilities' && (
+          <div className="animate-fade-in space-y-6">
+            {ABILITIES.map((ab, i) => (
+              <div key={i} className="chara-card rounded-2xl overflow-hidden">
+                <div className={`bg-gradient-to-r ${ab.color} p-4 flex items-center gap-3`}>
+                  <span className="text-2xl">{ab.icon}</span>
+                  <div>
+                    <h3 className="text-xl font-black">{ab.name}</h3>
+                    <span className="text-xs opacity-75 tracking-wider">{ab.type}</span>
+                  </div>
+                </div>
+                <div className="p-6"><p className="text-gray-300 text-sm leading-relaxed">{ab.desc}</p></div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {activeTab === 'stats' && (
+          <div className="animate-fade-in grid md:grid-cols-2 gap-6">
+            <div className="chara-card rounded-2xl p-6">
+              <h2 className="text-lg font-bold mb-6 flex items-center gap-2" style={{color:'#fcd34d'}}>
+                <span>◇</span> 戦闘ステータス
+              </h2>
+              {STATS.map((s, i) => (<StatBar key={s.label} {...s} delay={i * 150} />))}
+            </div>
+            <div className="space-y-4">
+              {[
+                { label: 'パンチ力', grade: 'EX', desc: '廻天による理論上無限のパンチ力', color: '#f59e0b' },
+                { label: '格闘技術', grade: 'S', desc: '接近戦のスペシャリスト', color: '#fcd34d' },
+                { label: '忠誠心', grade: 'S', desc: '団長の命令に忠実な旅団の武闘派', color: '#f59e0b' },
+                { label: '耐久力', grade: 'S', desc: '強化系ならではの頑強な肉体', color: '#d97706' },
+              ].map((item, i) => (
+                <div key={i} className="chara-card rounded-xl p-4 flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-xl flex items-center justify-center font-black text-lg flex-shrink-0"
+                    style={{background:`${item.color}22`, color:item.color, border:`1px solid ${item.color}44`}}>
+                    {item.grade}
+                  </div>
+                  <div>
+                    <p className="font-bold text-sm text-gray-200">{item.label}</p>
+                    <p className="text-xs text-gray-500 mt-0.5">{item.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'quotes' && (
+          <div className="animate-fade-in">
+            <QuoteCarousel />
+            <div className="mt-6 grid gap-4">
+              {QUOTES.map((q, i) => (
+                <div key={i} className="chara-card rounded-xl p-5">
+                  <p className="text-gray-200 text-sm leading-relaxed font-jp">{q.ja}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      <footer className="relative z-10 text-center py-10 border-t" style={{borderColor:'rgba(255,255,255,0.05)'}}>
+        <p className="text-2xl mb-2">💪 ⚔ 🔥 ★</p>
+        <p className="text-xs text-gray-700">HUNTER × HUNTER © Yoshihiro Togashi / Shueisha</p>
+        <p className="text-xs text-gray-800 mt-1">Fan-made tribute page</p>
+      </footer>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

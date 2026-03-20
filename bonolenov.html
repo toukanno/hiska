@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ボノレノフ＝ンドンゴ — 幻影旅団 No.10</title>
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          chara: { primary: '#92400e', accent: '#d97706', dark: '#0a0a0a', card: '#141414' },
+        },
+        fontFamily: { jp: ['"Noto Serif JP"', 'serif'] },
+        animation: {
+          'fade-in': 'fadeIn 0.8s ease forwards',
+          'float': 'float 3s ease-in-out infinite',
+        },
+        keyframes: {
+          fadeIn: { from: { opacity: 0 }, to: { opacity: 1 } },
+          float: { '0%,100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-10px)' } },
+        },
+      }
+    }
+  }
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;700;900&display=swap" rel="stylesheet">
+<style>
+  body { background-color: #0a0a0a; }
+  .gradient-text {
+    background: linear-gradient(135deg, #d97706, #92400e, #d97706);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    background-size: 200% auto; animation: shimmer 3s linear infinite;
+  }
+  @keyframes shimmer { to { background-position: 200% center; } }
+  .chara-card {
+    background: linear-gradient(145deg, #1a1a1a, #141414);
+    border: 1px solid rgba(146,64,14,0.3); transition: all 0.3s ease;
+  }
+  .chara-card:hover {
+    border-color: rgba(217,119,6,0.6); transform: translateY(-4px);
+    box-shadow: 0 10px 40px rgba(146,64,14,0.3);
+  }
+  .suit-bg { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+  .suit-item { position: absolute; font-size: 1.5rem; opacity: 0.03; animation: driftDown linear infinite; }
+  @keyframes driftDown { from { transform: translateY(-80px) rotate(0deg); } to { transform: translateY(110vh) rotate(360deg); } }
+  .ability-bar { background: linear-gradient(90deg, #92400e, #d97706); }
+  .progress-track { background: rgba(255,255,255,0.08); border-radius: 9999px; overflow: hidden; }
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: #0a0a0a; }
+  ::-webkit-scrollbar-thumb { background: #92400e; border-radius: 2px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+const QUOTES = [
+  { ja: "我が一族の戦いの舞を見せよう", en: "Let me show you the battle dance of my tribe." },
+  { ja: "この音が聞こえるか？これが俺の戦いの歌だ", en: "Can you hear this sound? This is my battle song." },
+  { ja: "ギュドンドンド族の誇りにかけて", en: "On the pride of the Gyudondond tribe." },
+];
+
+const STATS = [
+  { label: "念能力", value: 88, icon: "🎵" },
+  { label: "戦闘力", value: 85, icon: "⚔" },
+  { label: "知性", value: 75, icon: "◈" },
+  { label: "スピード", value: 78, icon: "◇" },
+  { label: "特殊攻撃", value: 92, icon: "🌍" },
+];
+
+const ABILITIES = [
+  {
+    name: "戦闘演武曲（バト＝レ・カンタービレ）",
+    type: "具現化系",
+    desc: "体に空いた穴から風を通して音を奏で、その音楽に応じた具現化物を生み出す能力。ギュドンドンド族の伝統的な戦闘法を念能力として昇華させた。奏でる曲によって異なる攻撃が発動し、強力な破壊力を持つ。",
+    color: "from-amber-800 to-amber-950",
+    icon: "🎵"
+  },
+  {
+    name: "木星（ジュピター）",
+    type: "具現化系",
+    desc: "戦闘演武曲の技の一つ。巨大な木星を模した球体を具現化し、敵に叩きつける。その破壊力は凄まじく、キメラアント編では敵を一撃で粉砕する威力を見せた。音楽を奏でることが発動条件であり、美しくも恐ろしい攻撃。",
+    color: "from-orange-800 to-orange-950",
+    icon: "🌍"
+  },
+];
+
+const PROFILE = [
+  { label: "本名", value: "ボノレノフ＝ンドンゴ" },
+  { label: "所属", value: "幻影旅団 No.10" },
+  { label: "念の系統", value: "具現化系" },
+  { label: "誕生日", value: "不明" },
+  { label: "血液型", value: "不明" },
+  { label: "身長", value: "不明" },
+  { label: "体重", value: "不明" },
+  { label: "出身", value: "ギュドンドンド族" },
+  { label: "特徴", value: "全身に穴・包帯姿" },
+];
+
+function SymbolBackground() {
+  const symbols = ['🎵','🌍','◈','◇','★'];
+  const items = Array.from({length:18},(_,i) => ({
+    symbol: symbols[i%5], left: `${5 + i*5.5}%`,
+    delay: `${(i * 1.1).toFixed(1)}s`, duration: `${10 + (i % 7) * 2}s`, size: `${1 + (i % 3) * 0.5}rem`,
+  }));
+  return (
+    <div className="suit-bg">
+      {items.map((item, i) => (
+        <span key={i} className="suit-item" style={{ left: item.left, top: '-80px', animationDelay: item.delay, animationDuration: item.duration, fontSize: item.size, color: i % 2 === 0 ? '#92400e' : '#d97706' }}>{item.symbol}</span>
+      ))}
+    </div>
+  );
+}
+
+function StatBar({ label, value, icon, delay }) {
+  const [width, setWidth] = useState(0);
+  useEffect(() => { setTimeout(() => setWidth(value), delay); }, []);
+  return (
+    <div className="mb-4">
+      <div className="flex justify-between items-center mb-1">
+        <span className="text-sm text-gray-300 font-jp">{icon} {label}</span>
+        <span className="text-sm font-bold" style={{color:'#d97706'}}>{value}</span>
+      </div>
+      <div className="progress-track h-2">
+        <div className="ability-bar h-2 rounded-full transition-all duration-1000 ease-out" style={{width:`${width}%`}} />
+      </div>
+    </div>
+  );
+}
+
+function QuoteCarousel() {
+  const [idx, setIdx] = useState(0);
+  const [visible, setVisible] = useState(true);
+  const next = () => { setVisible(false); setTimeout(() => { setIdx(i => (i+1) % QUOTES.length); setVisible(true); }, 300); };
+  const prev = () => { setVisible(false); setTimeout(() => { setIdx(i => (i-1+QUOTES.length) % QUOTES.length); setVisible(true); }, 300); };
+  return (
+    <div className="chara-card rounded-2xl p-8 text-center relative overflow-hidden">
+      <div className="absolute top-4 left-6 text-6xl opacity-10 font-serif" style={{color:'#92400e'}}>"</div>
+      <div className="absolute bottom-4 right-6 text-6xl opacity-10 font-serif rotate-180" style={{color:'#92400e'}}>"</div>
+      <div className="transition-opacity duration-300 relative z-10" style={{opacity: visible ? 1 : 0}}>
+        <p className="text-lg leading-relaxed text-gray-100 font-jp mb-4">{QUOTES[idx].ja}</p>
+        <p className="text-sm text-gray-500 italic">{QUOTES[idx].en}</p>
+      </div>
+      <div className="flex justify-center gap-4 mt-6">
+        <button onClick={prev} className="w-10 h-10 rounded-full border border-amber-700 text-amber-400 hover:bg-amber-900/30 transition-all flex items-center justify-center">‹</button>
+        <div className="flex gap-1 items-center">
+          {QUOTES.map((_,i) => (<button key={i} onClick={() => setIdx(i)} className={`w-2 h-2 rounded-full transition-all ${i===idx ? 'bg-amber-600 w-4' : 'bg-gray-600'}`} />))}
+        </div>
+        <button onClick={next} className="w-10 h-10 rounded-full border border-amber-700 text-amber-400 hover:bg-amber-900/30 transition-all flex items-center justify-center">›</button>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [activeTab, setActiveTab] = useState('profile');
+  const tabs = [
+    { id: 'profile', label: '🎵 プロフィール' },
+    { id: 'abilities', label: '🌍 能力' },
+    { id: 'stats', label: '◇ ステータス' },
+    { id: 'quotes', label: '★ 名言' },
+  ];
+
+  return (
+    <div className="min-h-screen text-white font-jp relative" style={{background:'#0a0a0a'}}>
+      <SymbolBackground />
+      <div className="relative z-10 max-w-4xl mx-auto px-6 pt-4">
+        <a href="index.html" className="text-sm text-gray-500 hover:text-amber-400 transition-colors">← トップページへ戻る</a>
+      </div>
+      <div className="relative z-10 overflow-hidden" style={{background:'linear-gradient(180deg, #1a0f05 0%, #0a0a0a 100%)'}}>
+        <div className="absolute inset-0" style={{background:'radial-gradient(ellipse at 50% 0%, rgba(146,64,14,0.2) 0%, transparent 60%)'}} />
+        <div className="max-w-4xl mx-auto px-6 py-20 text-center relative">
+          <div className="flex justify-center gap-8 mb-8 text-2xl opacity-40">
+            {['🎵','🌍','◈','★'].map((s,i) => (
+              <span key={i} style={{color: i%2===0 ? '#92400e' : '#d97706', animationDelay:`${i*0.2}s`}} className="animate-float inline-block">{s}</span>
+            ))}
+          </div>
+          <div className="inline-block mb-6 px-4 py-1 rounded-full border text-xs tracking-widest"
+            style={{borderColor:'rgba(217,119,6,0.3)', color:'#d97706', background:'rgba(146,64,14,0.05)'}}>
+            PHANTOM TROUPE — No.10
+          </div>
+          <h1 className="text-4xl md:text-7xl font-black mb-4 leading-none tracking-tight">
+            <span className="gradient-text">BONOLENOV</span>
+          </h1>
+          <p className="text-2xl text-gray-400 mb-2 font-light tracking-widest">ボノレノフ＝ンドンゴ</p>
+          <p className="text-sm text-gray-600 tracking-widest">NDONGO</p>
+          <div className="flex justify-center gap-3 mt-8 flex-wrap">
+            {['戦闘舞踊', '具現化系', 'No.10', 'ギュドンドンド族'].map((tag,i) => (
+              <span key={i} className="px-3 py-1 rounded-full text-xs border"
+                style={{borderColor:'rgba(217,119,6,0.4)', color:'#fbbf24', background:'rgba(146,64,14,0.08)'}}>
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="relative z-10 sticky top-0" style={{background:'rgba(10,10,10,0.95)', backdropFilter:'blur(12px)', borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="flex gap-0 overflow-x-auto">
+            {tabs.map(tab => (
+              <button key={tab.id} onClick={() => setActiveTab(tab.id)}
+                className={`px-5 py-4 text-sm font-bold whitespace-nowrap transition-all border-b-2 ${
+                  activeTab === tab.id ? 'border-amber-600 text-amber-400' : 'border-transparent text-gray-500 hover:text-gray-300'
+                }`}>{tab.label}</button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="relative z-10 max-w-4xl mx-auto px-6 py-12">
+        {activeTab === 'profile' && (
+          <div className="animate-fade-in grid md:grid-cols-2 gap-6">
+            <div className="chara-card rounded-2xl p-6">
+              <h2 className="text-lg font-bold mb-6 flex items-center gap-2" style={{color:'#d97706'}}>
+                <span>🎵</span> 基本プロフィール
+              </h2>
+              <div className="space-y-3">
+                {PROFILE.map(({ label, value }) => (
+                  <div key={label} className="flex justify-between items-center py-2" style={{borderBottom:'1px solid rgba(255,255,255,0.05)'}}>
+                    <span className="text-xs text-gray-500 tracking-wider">{label}</span>
+                    <span className="text-sm text-gray-200 font-medium">{value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="space-y-5">
+              <div className="chara-card rounded-2xl p-6">
+                <h2 className="text-lg font-bold mb-4 flex items-center gap-2" style={{color:'#d97706'}}>
+                  <span>◈</span> キャラクター概要
+                </h2>
+                <p className="text-sm text-gray-400 leading-relaxed">
+                  ボノレノフ＝ンドンゴは幻影旅団No.10のメンバー。全身を包帯で覆った謎めいた風貌を持つ。少数民族ギュドンドンド族の出身で、部族の伝統として体に開けた穴を使い、風を通して音楽を奏でる。その音楽に念を込めて攻撃する独特の戦闘スタイルを持ち、「木星（ジュピター）」などの強力な技を操る。
+                </p>
+              </div>
+              <div className="chara-card rounded-2xl p-6" style={{background:'linear-gradient(135deg, rgba(146,64,14,0.15), rgba(217,119,6,0.05))'}}>
+                <h2 className="text-sm font-bold mb-3 text-gray-400 tracking-widest">出身部族</h2>
+                <p className="text-3xl font-black gradient-text">ギュドンドンド族</p>
+                <p className="text-xs text-gray-600 mt-1">音を使った戦闘舞踊の伝承者</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'abilities' && (
+          <div className="animate-fade-in space-y-6">
+            {ABILITIES.map((ab, i) => (
+              <div key={i} className="chara-card rounded-2xl overflow-hidden">
+                <div className={`bg-gradient-to-r ${ab.color} p-4 flex items-center gap-3`}>
+                  <span className="text-2xl">{ab.icon}</span>
+                  <div>
+                    <h3 className="text-xl font-black">{ab.name}</h3>
+                    <span className="text-xs opacity-75 tracking-wider">{ab.type}</span>
+                  </div>
+                </div>
+                <div className="p-6"><p className="text-gray-300 text-sm leading-relaxed">{ab.desc}</p></div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {activeTab === 'stats' && (
+          <div className="animate-fade-in grid md:grid-cols-2 gap-6">
+            <div className="chara-card rounded-2xl p-6">
+              <h2 className="text-lg font-bold mb-6 flex items-center gap-2" style={{color:'#d97706'}}>
+                <span>◇</span> 戦闘ステータス
+              </h2>
+              {STATS.map((s, i) => (<StatBar key={s.label} {...s} delay={i * 150} />))}
+            </div>
+            <div className="space-y-4">
+              {[
+                { label: '具現化威力', grade: 'S+', desc: '木星の破壊力は旅団内でもトップクラス', color: '#d97706' },
+                { label: '独自性', grade: 'EX', desc: '唯一無二の音楽戦闘スタイル', color: '#92400e' },
+                { label: '部族の技', grade: 'S', desc: '伝統的戦闘舞踊を念と融合', color: '#d97706' },
+                { label: '謎度', grade: 'S+', desc: '旅団内でも最も謎に包まれた存在', color: '#b45309' },
+              ].map((item, i) => (
+                <div key={i} className="chara-card rounded-xl p-4 flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-xl flex items-center justify-center font-black text-lg flex-shrink-0"
+                    style={{background:`${item.color}22`, color:item.color, border:`1px solid ${item.color}44`}}>
+                    {item.grade}
+                  </div>
+                  <div>
+                    <p className="font-bold text-sm text-gray-200">{item.label}</p>
+                    <p className="text-xs text-gray-500 mt-0.5">{item.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'quotes' && (
+          <div className="animate-fade-in">
+            <QuoteCarousel />
+            <div className="mt-6 grid gap-4">
+              {QUOTES.map((q, i) => (
+                <div key={i} className="chara-card rounded-xl p-5">
+                  <p className="text-gray-200 text-sm leading-relaxed font-jp">{q.ja}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      <footer className="relative z-10 text-center py-10 border-t" style={{borderColor:'rgba(255,255,255,0.05)'}}>
+        <p className="text-2xl mb-2">🎵 🌍 ◈ ★</p>
+        <p className="text-xs text-gray-700">HUNTER × HUNTER © Yoshihiro Togashi / Shueisha</p>
+        <p className="text-xs text-gray-800 mt-1">Fan-made tribute page</p>
+      </footer>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
