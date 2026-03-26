@@ -1,7 +1,21 @@
-const CACHE_NAME = 'hisoka-v1';
+const CACHE_NAME = 'hisoka-v2';
 const ASSETS = [
   './',
   './index.html',
+  './arca.html',
+  './chrollo.html',
+  './nobunaga.html',
+  './feitan.html',
+  './machi.html',
+  './kalluto.html',
+  './phinks.html',
+  './shalnark.html',
+  './franklin.html',
+  './shizuku.html',
+  './pakunoda.html',
+  './bonolenov.html',
+  './uvogin.html',
+  './kortopi.html',
   './manifest.json',
   './icons/icon-192.png',
   './icons/icon-512.png',
