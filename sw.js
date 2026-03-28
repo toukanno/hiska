@@ -1,4 +1,4 @@
-const CACHE_NAME = 'hisoka-v3';
+const CACHE_NAME = 'hisoka-v4';
 const ASSETS = [
   '/',
   '/arca',
@@ -15,6 +15,21 @@ const ASSETS = [
   '/bonolenov',
   '/uvogin',
   '/kortopi',
+  '/gon',
+  '/killua',
+  '/kurapika',
+  '/leorio',
+  '/hisoka',
+  '/ging',
+  '/netero',
+  '/meruem',
+  '/pitou',
+  '/bisky',
+  '/illumi',
+  '/zeno',
+  '/silva',
+  '/komugi',
+  '/morel',
   '/manifest.json',
   '/icons/icon-192.png',
   '/icons/icon-512.png',

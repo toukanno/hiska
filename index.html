@@ -539,6 +539,78 @@ function App() {
         </div>
       </div>
 
+      {/* Main Characters */}
+      <div className="relative z-10 max-w-4xl mx-auto px-6 py-12">
+        <div className="text-center mb-10">
+          <div className="inline-block mb-4 px-4 py-1 rounded-full border text-xs tracking-widest"
+            style={{borderColor:'rgba(22,163,74,0.3)', color:'#16a34a', background:'rgba(22,163,74,0.05)'}}>
+            MAIN CHARACTERS — 主要キャラクター
+          </div>
+          <h2 className="text-3xl md:text-4xl font-black gradient-text mb-2">メインキャラ</h2>
+          <p className="text-sm text-gray-600">各キャラクターのページへアクセス</p>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          {[
+            { name: 'ゴン＝フリークス', role: '主人公', file: 'gon', color: '#16a34a' },
+            { name: 'キルア＝ゾルディック', role: 'ゴンの親友', file: 'killua', color: '#3b82f6' },
+            { name: 'クラピカ', role: '復讐者', file: 'kurapika', color: '#dc2626' },
+            { name: 'レオリオ', role: '医学生ハンター', file: 'leorio', color: '#2563eb' },
+            { name: 'ヒソカ＝モロウ', role: '奇術師', file: 'hisoka', color: '#be185d' },
+            { name: 'ジン＝フリークス', role: '遺跡ハンター', file: 'ging', color: '#854d0e' },
+          ].map((ch, i) => (
+            <a key={i} href={ch.file} className="hisoka-card rounded-xl p-4 block group cursor-pointer">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg flex items-center justify-center font-black text-xs flex-shrink-0"
+                  style={{background:`${ch.color}22`, color: ch.color, border:`1px solid ${ch.color}44`}}>
+                  ★
+                </div>
+                <div className="min-w-0">
+                  <p className="font-bold text-sm text-gray-200 truncate group-hover:text-white transition-colors">{ch.name}</p>
+                  <p className="text-xs text-gray-500">{ch.role}</p>
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+
+      {/* Zoldyck Family & Others */}
+      <div className="relative z-10 max-w-4xl mx-auto px-6 py-12">
+        <div className="text-center mb-10">
+          <div className="inline-block mb-4 px-4 py-1 rounded-full border text-xs tracking-widest"
+            style={{borderColor:'rgba(107,33,168,0.3)', color:'#7c3aed', background:'rgba(107,33,168,0.05)'}}>
+            OTHER CHARACTERS — その他キャラクター
+          </div>
+          <h2 className="text-3xl md:text-4xl font-black gradient-text mb-2">その他キャラ</h2>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          {[
+            { name: 'ネテロ会長', role: 'ハンター協会会長', file: 'netero', color: '#b45309' },
+            { name: 'メルエム', role: 'キメラアント王', file: 'meruem', color: '#4c1d95' },
+            { name: 'ネフェルピトー', role: '王直属護衛軍', file: 'pitou', color: '#7c3aed' },
+            { name: 'ビスケ', role: '二つ星ハンター', file: 'bisky', color: '#db2777' },
+            { name: 'コムギ', role: '軍儀世界王者', file: 'komugi', color: '#ca8a04' },
+            { name: 'モラウ', role: '海洋ハンター', file: 'morel', color: '#0e7490' },
+            { name: 'イルミ', role: 'ゾルディック家長男', file: 'illumi', color: '#1e293b' },
+            { name: 'ゼノ', role: 'ゾルディック家先代', file: 'zeno', color: '#6b21a8' },
+            { name: 'シルバ', role: 'ゾルディック家当主', file: 'silva', color: '#475569' },
+          ].map((ch, i) => (
+            <a key={i} href={ch.file} className="hisoka-card rounded-xl p-4 block group cursor-pointer">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg flex items-center justify-center font-black text-xs flex-shrink-0"
+                  style={{background:`${ch.color}22`, color: ch.color, border:`1px solid ${ch.color}44`}}>
+                  ◆
+                </div>
+                <div className="min-w-0">
+                  <p className="font-bold text-sm text-gray-200 truncate group-hover:text-white transition-colors">{ch.name}</p>
+                  <p className="text-xs text-gray-500">{ch.role}</p>
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+
       {/* Ad: Footer Banner */}
       <div className="relative z-10 max-w-4xl mx-auto px-6">
         <AdBanner slot="XXXXXXXXXX" format="horizontal" />
