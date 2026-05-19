@@ -92,6 +92,100 @@
 <script type="text/babel">
 const { useState, useEffect, useRef } = React;
 
+// ── i18n ──────────────────────────────────────────────────
+const I18N = {
+  ja: {
+    hisokaPage: 'HISOKA PAGE',
+    uvoginPage: 'UVOGIN PAGE',
+    heroBadge: 'HUNTER × HUNTER',
+    heroNameSub: 'ヒソカ＝モロウ',
+    heroTags: ['奇術師', '変化系', '元No.4', '戦闘狂'],
+    arcaLink: '☆ アルカのページへ',
+    tabs: {
+      profile: '♠ プロフィール',
+      abilities: '♦ 能力',
+      stats: '♥ ステータス',
+      quotes: '♣ 名言',
+    },
+    profileTitle: '基本プロフィール',
+    overviewTitle: 'キャラクター概要',
+    overviewBody: 'ヒソカ・モロウは、『HUNTER×HUNTER』に登場するキャラクター。マジシャンを自称し、戦闘に異常なまでの快楽を見出す謎多き男。強者との闘いを極度に好み、潜在能力の高い者を「未熟な果実」として育てる習性を持つ。',
+    examLabel: 'HUNTER EXAM 第四次試験',
+    examResult: '通過',
+    examSub: '単独実力突破',
+    statsTitle: '戦闘ステータス',
+    abilityQuote: '「伸縮自在の愛（バンジーガム）」にはゴムとガム両方の性質がある♠',
+    abilityQuoteBy: '— ヒソカ',
+    gradesTitle: '評価グレード',
+    troupeBadge: 'PHANTOM TROUPE — 幻影旅団',
+    troupeTitle: '旅団メンバー',
+    troupeSub: '各メンバーのページへアクセス',
+    mainBadge: 'MAIN CHARACTERS — 主要キャラクター',
+    mainTitle: 'メインキャラ',
+    mainSub: '各キャラクターのページへアクセス',
+    otherBadge: 'OTHER CHARACTERS — その他キャラクター',
+    otherTitle: 'その他キャラ',
+    footerCopy: 'HUNTER × HUNTER © 冨樫義博 / 集英社',
+    footerSub: 'ファンメイドページ',
+    uvoginHeader: 'GENEI RYODAN',
+    uvoginName: 'ウヴォーギン',
+    uvoginLead: '「力でねじ伏せる」旅団随一のパワーファイター',
+    uvoginProfileTitle: '基本プロフィール',
+    uvoginSkillTitle: '必殺技',
+    uvoginSkillName: '超破壊拳（ビッグバンインパクト）',
+    uvoginSkillDesc: '強化した拳による一点突破の超威力攻撃。クレーターを生むほどの破壊力を持ち、シンプルながら「強化系」の真髄を体現する技として描かれる。',
+    uvoginStatsTitle: '戦闘ステータス',
+    uvoginQuotesTitle: '名言',
+    langSwitch: 'EN',
+    langLabel: '言語を切り替え',
+  },
+  en: {
+    hisokaPage: 'HISOKA PAGE',
+    uvoginPage: 'UVOGIN PAGE',
+    heroBadge: 'HUNTER × HUNTER',
+    heroNameSub: 'Hisoka Morow',
+    heroTags: ['Magician', 'Transmuter', 'Former No.4', 'Battle Maniac'],
+    arcaLink: '☆ Go to Alluka Page',
+    tabs: {
+      profile: '♠ Profile',
+      abilities: '♦ Abilities',
+      stats: '♥ Stats',
+      quotes: '♣ Quotes',
+    },
+    profileTitle: 'Basic Profile',
+    overviewTitle: 'Character Overview',
+    overviewBody: "Hisoka Morow is a character from HUNTER×HUNTER. A self-proclaimed magician and a mysterious man who finds abnormal pleasure in combat. He loves fighting strong opponents and has a habit of nurturing those with high potential as 'unripe fruit'.",
+    examLabel: 'HUNTER EXAM Phase 4',
+    examResult: 'Passed',
+    examSub: 'Solo Breakthrough',
+    statsTitle: 'Combat Stats',
+    abilityQuote: '"Bungee Gum possesses the properties of both rubber and gum." ♠',
+    abilityQuoteBy: '— Hisoka',
+    gradesTitle: 'Rating Grades',
+    troupeBadge: 'PHANTOM TROUPE',
+    troupeTitle: 'Troupe Members',
+    troupeSub: 'Access each member page',
+    mainBadge: 'MAIN CHARACTERS',
+    mainTitle: 'Main Characters',
+    mainSub: 'Access each character page',
+    otherBadge: 'OTHER CHARACTERS',
+    otherTitle: 'Other Characters',
+    footerCopy: 'HUNTER × HUNTER © Yoshihiro Togashi / Shueisha',
+    footerSub: 'Fan-made tribute page',
+    uvoginHeader: 'GENEI RYODAN',
+    uvoginName: 'Uvogin',
+    uvoginLead: 'The Troupe\'s top power fighter who "crushes by force"',
+    uvoginProfileTitle: 'Basic Profile',
+    uvoginSkillTitle: 'Signature Move',
+    uvoginSkillName: 'Big Bang Impact',
+    uvoginSkillDesc: 'A focused-point, super-powerful attack with an enhanced fist. With destructive power capable of creating craters, it embodies the essence of the Enhancement category in its simplicity.',
+    uvoginStatsTitle: 'Combat Stats',
+    uvoginQuotesTitle: 'Quotes',
+    langSwitch: 'JA',
+    langLabel: 'Switch language',
+  },
+};
+
 // ── Data ──────────────────────────────────────────────────
 const QUOTES = [
   { ja: "キミの敗因は容量（メモリ）のムダ使い♥", en: "Your downfall was the waste of your memory capacity." },
@@ -102,62 +196,67 @@ const QUOTES = [
 ];
 
 const STATS = [
-  { label: "念能力", value: 97, icon: "♦" },
-  { label: "戦闘力", value: 99, icon: "♠" },
-  { label: "知性", value: 85, icon: "♥" },
-  { label: "スピード", value: 94, icon: "♣" },
-  { label: "残虐性", value: 96, icon: "♦" },
+  { ja: "念能力", en: "Nen Power", value: 97, icon: "♦" },
+  { ja: "戦闘力", en: "Combat", value: 99, icon: "♠" },
+  { ja: "知性", en: "Intelligence", value: 85, icon: "♥" },
+  { ja: "スピード", en: "Speed", value: 94, icon: "♣" },
+  { ja: "残虐性", en: "Brutality", value: 96, icon: "♦" },
 ];
 
 const ABILITIES = [
   {
-    name: "伸縮自在の愛（バンジーガム）",
-    type: "変化系",
-    desc: "自身のオーラにゴムとガム両方の性質を持たせる変化系能力。伸縮自在に伸び縮みし、あらゆるものに付着させることができる。攻防一体の万能能力で、ヒソカの戦闘スタイルの核。",
+    ja: { name: "伸縮自在の愛（バンジーガム）", type: "変化系", desc: "自身のオーラにゴムとガム両方の性質を持たせる変化系能力。伸縮自在に伸び縮みし、あらゆるものに付着させることができる。攻防一体の万能能力で、ヒソカの戦闘スタイルの核。" },
+    en: { name: "Bungee Gum", type: "Transmutation", desc: "A Transmutation ability that gives his aura the properties of both rubber and gum. It stretches and retracts freely and can stick to anything. As an all-purpose ability uniting offense and defense, it forms the core of Hisoka's fighting style." },
     color: "from-red-700 to-red-900",
     icon: "♦"
   },
   {
-    name: "薄っぺらな嘘（ドッキリテクスチャー）",
-    type: "変化系",
-    desc: "オーラを変化させ、薄い物体の表面にあらゆる質感・模様を再現する能力。幻影旅団の蜘蛛の刺青を偽装したり、切断された腕を繋がっているように見せかけるなど、欺瞞に特化した能力。",
+    ja: { name: "薄っぺらな嘘（ドッキリテクスチャー）", type: "変化系", desc: "オーラを変化させ、薄い物体の表面にあらゆる質感・模様を再現する能力。幻影旅団の蜘蛛の刺青を偽装したり、切断された腕を繋がっているように見せかけるなど、欺瞞に特化した能力。" },
+    en: { name: "Texture Surprise", type: "Transmutation", desc: "An ability that transmutes aura to reproduce any texture or pattern on the surface of thin objects. Specialized for deception — used for forging the Phantom Troupe's spider tattoo, or making a severed arm appear still attached." },
     color: "from-yellow-700 to-yellow-900",
     icon: "♠"
   },
 ];
 
 const PROFILE = [
-  { label: "本名", value: "ヒソカ＝モロウ" },
-  { label: "所属", value: "元幻影旅団 No.4（偽装入団）" },
-  { label: "念の系統", value: "変化系" },
-  { label: "誕生日", value: "6月6日" },
-  { label: "血液型", value: "B型" },
-  { label: "身長", value: "187 cm" },
-  { label: "体重", value: "91 kg" },
-  { label: "職業", value: "奇術師" },
-  { label: "出身", value: "不明" },
+  { ja: { label: "本名", value: "ヒソカ＝モロウ" }, en: { label: "Full Name", value: "Hisoka Morow" } },
+  { ja: { label: "所属", value: "元幻影旅団 No.4（偽装入団）" }, en: { label: "Affiliation", value: "Former Phantom Troupe No.4 (Infiltrator)" } },
+  { ja: { label: "念の系統", value: "変化系" }, en: { label: "Nen Type", value: "Transmuter" } },
+  { ja: { label: "誕生日", value: "6月6日" }, en: { label: "Birthday", value: "June 6" } },
+  { ja: { label: "血液型", value: "B型" }, en: { label: "Blood Type", value: "B" } },
+  { ja: { label: "身長", value: "187 cm" }, en: { label: "Height", value: "187 cm" } },
+  { ja: { label: "体重", value: "91 kg" }, en: { label: "Weight", value: "91 kg" } },
+  { ja: { label: "職業", value: "奇術師" }, en: { label: "Occupation", value: "Magician" } },
+  { ja: { label: "出身", value: "不明" }, en: { label: "Origin", value: "Unknown" } },
+];
+
+const GRADES = [
+  { ja: { label: '殺傷能力', desc: '幻影旅団を単独で壊滅させうる実力' }, en: { label: 'Lethality', desc: 'Capable of single-handedly destroying the Phantom Troupe' }, grade: 'S', color: '#c0392b' },
+  { ja: { label: '念の習熟度', desc: 'バンジーガムで変化系トップクラス' }, en: { label: 'Nen Mastery', desc: 'Top-class Transmuter with Bungee Gum' }, grade: 'S+', color: '#d4a017' },
+  { ja: { label: '格闘技術', desc: '近接・遠距離どちらも超一流' }, en: { label: 'Fighting Skill', desc: 'First-rate at both melee and ranged combat' }, grade: 'S', color: '#c0392b' },
+  { ja: { label: '精神的脅威度', desc: '読めない行動原理で相手を翻弄' }, en: { label: 'Mental Threat', desc: 'Unreadable motives keep opponents off-balance' }, grade: 'EX', color: '#8b5cf6' },
 ];
 
 const UVOGIN_PROFILE = [
-  { label: "本名", value: "ウヴォーギン" },
-  { label: "所属", value: "幻影旅団 No.11" },
-  { label: "念の系統", value: "強化系" },
-  { label: "身長", value: "不明（巨躯）" },
-  { label: "特性", value: "圧倒的フィジカル" },
+  { ja: { label: "本名", value: "ウヴォーギン" }, en: { label: "Full Name", value: "Uvogin" } },
+  { ja: { label: "所属", value: "幻影旅団 No.11" }, en: { label: "Affiliation", value: "Phantom Troupe No.11" } },
+  { ja: { label: "念の系統", value: "強化系" }, en: { label: "Nen Type", value: "Enhancer" } },
+  { ja: { label: "身長", value: "不明（巨躯）" }, en: { label: "Height", value: "Unknown (Giant)" } },
+  { ja: { label: "特性", value: "圧倒的フィジカル" }, en: { label: "Trait", value: "Overwhelming Physique" } },
 ];
 
 const UVOGIN_STATS = [
-  { label: "破壊力", value: 100, icon: "💥" },
-  { label: "防御力", value: 98, icon: "🛡️" },
-  { label: "耐久力", value: 97, icon: "🦍" },
-  { label: "スピード", value: 82, icon: "⚡" },
-  { label: "威圧感", value: 100, icon: "👊" },
+  { ja: "破壊力", en: "Destructive Power", value: 100, icon: "💥" },
+  { ja: "防御力", en: "Defense", value: 98, icon: "🛡️" },
+  { ja: "耐久力", en: "Endurance", value: 97, icon: "🦍" },
+  { ja: "スピード", en: "Speed", value: 82, icon: "⚡" },
+  { ja: "威圧感", en: "Intimidation", value: 100, icon: "👊" },
 ];
 
 const UVOGIN_QUOTES = [
-  "オレは生まれついての強化系だ！！",
-  "正面からぶっ壊す、それが一番早ぇ。",
-  "陰獣？ まとめて来いよ。",
+  { ja: "オレは生まれついての強化系だ！！", en: "I'm a born Enhancer!!" },
+  { ja: "正面からぶっ壊す、それが一番早ぇ。", en: "Crushing them head-on — that's the fastest way." },
+  { ja: "陰獣？ まとめて来いよ。", en: "Shadow Beasts? Come at me all at once." },
 ];
 
 // ── Ad Component ──────────────────────────────────────────
@@ -228,7 +327,7 @@ function StatBar({ label, value, icon, delay }) {
   );
 }
 
-function QuoteCarousel() {
+function QuoteCarousel({ lang }) {
   const [idx, setIdx] = useState(0);
   const [visible, setVisible] = useState(true);
   const next = () => {
@@ -239,13 +338,15 @@ function QuoteCarousel() {
     setVisible(false);
     setTimeout(() => { setIdx(i => (i-1+QUOTES.length) % QUOTES.length); setVisible(true); }, 300);
   };
+  const primary = lang === 'en' ? QUOTES[idx].en : QUOTES[idx].ja;
+  const secondary = lang === 'en' ? QUOTES[idx].ja : QUOTES[idx].en;
   return (
     <div className="hisoka-card rounded-2xl p-8 text-center relative overflow-hidden">
       <div className="absolute top-4 left-6 text-6xl opacity-10 font-serif" style={{color:'#d4a017'}}>"</div>
       <div className="absolute bottom-4 right-6 text-6xl opacity-10 font-serif rotate-180" style={{color:'#d4a017'}}>"</div>
       <div className="transition-opacity duration-300 relative z-10" style={{opacity: visible ? 1 : 0}}>
-        <p className="text-lg leading-relaxed text-gray-100 font-jp mb-4">{QUOTES[idx].ja}</p>
-        <p className="text-sm text-gray-500 italic">{QUOTES[idx].en}</p>
+        <p className="text-lg leading-relaxed text-gray-100 font-jp mb-4">{primary}</p>
+        <p className="text-sm text-gray-500 italic">{secondary}</p>
       </div>
       <div className="flex justify-center gap-4 mt-6">
         <button onClick={prev}
@@ -270,11 +371,28 @@ function QuoteCarousel() {
 function App() {
   const [activePage, setActivePage] = useState('hisoka');
   const [activeTab, setActiveTab] = useState('profile');
+  const [lang, setLang] = useState(() => {
+    try {
+      const saved = localStorage.getItem('hisoka.lang');
+      if (saved === 'ja' || saved === 'en') return saved;
+    } catch (e) {}
+    return (navigator.language || '').toLowerCase().startsWith('ja') ? 'ja' : 'en';
+  });
+  const t = I18N[lang];
+
+  useEffect(() => {
+    try { localStorage.setItem('hisoka.lang', lang); } catch (e) {}
+    document.documentElement.setAttribute('lang', lang);
+    document.title = lang === 'en' ? 'Hisoka Morow — Character Page' : 'ヒソカ・モロウ — 紹介ページ';
+  }, [lang]);
+
+  const toggleLang = () => setLang(l => (l === 'ja' ? 'en' : 'ja'));
+
   const tabs = [
-    { id: 'profile', label: '♠ プロフィール' },
-    { id: 'abilities', label: '♦ 能力' },
-    { id: 'stats', label: '♥ ステータス' },
-    { id: 'quotes', label: '♣ 名言' },
+    { id: 'profile', label: t.tabs.profile },
+    { id: 'abilities', label: t.tabs.abilities },
+    { id: 'stats', label: t.tabs.stats },
+    { id: 'quotes', label: t.tabs.quotes },
   ];
 
   return (
@@ -282,7 +400,7 @@ function App() {
       <SuitBackground />
 
       <div className="relative z-20 sticky top-0" style={{background:'rgba(8,8,8,0.92)', backdropFilter:'blur(10px)', borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
-        <div className="max-w-4xl mx-auto px-6 py-3 flex justify-center gap-3">
+        <div className="max-w-4xl mx-auto px-6 py-3 relative flex justify-center items-center gap-3">
           <button
             onClick={() => { setActivePage('hisoka'); setActiveTab('profile'); }}
             className={`px-4 py-2 rounded-full text-xs font-bold tracking-wider transition-all border ${
@@ -291,7 +409,7 @@ function App() {
                 : 'text-gray-400 border-gray-700 hover:text-gray-200'
             }`}
           >
-            HISOKA PAGE
+            {t.hisokaPage}
           </button>
           <button
             onClick={() => setActivePage('uvogin')}
@@ -301,7 +419,15 @@ function App() {
                 : 'text-gray-400 border-gray-700 hover:text-gray-200'
             }`}
           >
-            UVOGIN PAGE
+            {t.uvoginPage}
+          </button>
+          <button
+            onClick={toggleLang}
+            aria-label={t.langLabel}
+            title={t.langLabel}
+            className="absolute right-4 top-1/2 -translate-y-1/2 px-3 py-1.5 rounded-full text-xs font-bold tracking-wider transition-all border text-yellow-300 border-yellow-700 hover:bg-yellow-900/20"
+          >
+            🌐 {t.langSwitch}
           </button>
         </div>
       </div>
@@ -323,17 +449,17 @@ function App() {
 
           <div className="inline-block mb-6 px-4 py-1 rounded-full border text-xs tracking-widest"
             style={{borderColor:'rgba(212,160,23,0.3)', color:'#d4a017', background:'rgba(212,160,23,0.05)'}}>
-            HUNTER × HUNTER
+            {t.heroBadge}
           </div>
 
           <h1 className="text-6xl md:text-8xl font-black mb-4 leading-none tracking-tight">
             <span className="gradient-text">HISOKA</span>
           </h1>
-          <p className="text-2xl text-gray-400 mb-2 font-light tracking-widest">ヒソカ＝モロウ</p>
+          <p className="text-2xl text-gray-400 mb-2 font-light tracking-widest">{t.heroNameSub}</p>
           <p className="text-sm text-gray-600 tracking-widest">MOROW</p>
 
           <div className="flex justify-center gap-3 mt-8 flex-wrap">
-            {['奇術師', '変化系', '元No.4', '戦闘狂'].map((tag,i) => (
+            {t.heroTags.map((tag,i) => (
               <span key={i} className="px-3 py-1 rounded-full text-xs border"
                 style={{borderColor:'rgba(192,57,43,0.4)', color:'#ef9e9e', background:'rgba(192,57,43,0.08)'}}>
                 {tag}
@@ -346,7 +472,7 @@ function App() {
             <a href="arca"
               className="inline-block px-4 py-2 rounded-full text-xs border transition-all hover:bg-blue-900/20"
               style={{borderColor:'rgba(91,127,219,0.4)', color:'#a8b8ef'}}>
-              ☆ アルカのページへ
+              {t.arcaLink}
             </a>
           </div>
         </div>
@@ -384,36 +510,37 @@ function App() {
           <div className="animate-fade-in grid md:grid-cols-2 gap-6">
             <div className="hisoka-card rounded-2xl p-6">
               <h2 className="text-lg font-bold mb-6 flex items-center gap-2" style={{color:'#d4a017'}}>
-                <span>♠</span> 基本プロフィール
+                <span>♠</span> {t.profileTitle}
               </h2>
               <div className="space-y-3">
-                {PROFILE.map(({ label, value }) => (
-                  <div key={label} className="flex justify-between items-center py-2"
-                    style={{borderBottom:'1px solid rgba(255,255,255,0.05)'}}>
-                    <span className="text-xs text-gray-500 tracking-wider">{label}</span>
-                    <span className="text-sm text-gray-200 font-medium">{value}</span>
-                  </div>
-                ))}
+                {PROFILE.map((row) => {
+                  const { label, value } = row[lang];
+                  return (
+                    <div key={label} className="flex justify-between items-center py-2"
+                      style={{borderBottom:'1px solid rgba(255,255,255,0.05)'}}>
+                      <span className="text-xs text-gray-500 tracking-wider">{label}</span>
+                      <span className="text-sm text-gray-200 font-medium">{value}</span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
             <div className="space-y-5">
               <div className="hisoka-card rounded-2xl p-6">
                 <h2 className="text-lg font-bold mb-4 flex items-center gap-2" style={{color:'#d4a017'}}>
-                  <span>♦</span> キャラクター概要
+                  <span>♦</span> {t.overviewTitle}
                 </h2>
                 <p className="text-sm text-gray-400 leading-relaxed">
-                  ヒソカ・モロウは、『HUNTER×HUNTER』に登場するキャラクター。
-                  マジシャンを自称し、戦闘に異常なまでの快楽を見出す謎多き男。
-                  強者との闘いを極度に好み、潜在能力の高い者を「未熟な果実」として育てる習性を持つ。
+                  {t.overviewBody}
                 </p>
               </div>
 
               <div className="hisoka-card rounded-2xl p-6"
                 style={{background:'linear-gradient(135deg, rgba(192,57,43,0.1), rgba(212,160,23,0.05))'}}>
-                <h2 className="text-sm font-bold mb-3 text-gray-400 tracking-widest">HUNTER EXAM 第四次試験</h2>
-                <p className="text-3xl font-black gradient-text">通過</p>
-                <p className="text-xs text-gray-600 mt-1">単独実力突破</p>
+                <h2 className="text-sm font-bold mb-3 text-gray-400 tracking-widest">{t.examLabel}</h2>
+                <p className="text-3xl font-black gradient-text">{t.examResult}</p>
+                <p className="text-xs text-gray-600 mt-1">{t.examSub}</p>
               </div>
             </div>
           </div>
@@ -422,27 +549,30 @@ function App() {
         {/* Abilities */}
         {activeTab === 'abilities' && (
           <div className="animate-fade-in space-y-6">
-            {ABILITIES.map((ab, i) => (
-              <div key={i} className="hisoka-card rounded-2xl overflow-hidden">
-                <div className={`bg-gradient-to-r ${ab.color} p-4 flex items-center gap-3`}>
-                  <span className="text-2xl">{ab.icon}</span>
-                  <div>
-                    <h3 className="text-xl font-black">{ab.name}</h3>
-                    <span className="text-xs opacity-75 tracking-wider">{ab.type}</span>
+            {ABILITIES.map((ab, i) => {
+              const tr = ab[lang];
+              return (
+                <div key={i} className="hisoka-card rounded-2xl overflow-hidden">
+                  <div className={`bg-gradient-to-r ${ab.color} p-4 flex items-center gap-3`}>
+                    <span className="text-2xl">{ab.icon}</span>
+                    <div>
+                      <h3 className="text-xl font-black">{tr.name}</h3>
+                      <span className="text-xs opacity-75 tracking-wider">{tr.type}</span>
+                    </div>
+                  </div>
+                  <div className="p-6">
+                    <p className="text-gray-300 text-sm leading-relaxed">{tr.desc}</p>
                   </div>
                 </div>
-                <div className="p-6">
-                  <p className="text-gray-300 text-sm leading-relaxed">{ab.desc}</p>
-                </div>
-              </div>
-            ))}
+              );
+            })}
 
             <div className="hisoka-card rounded-2xl p-6 text-center"
               style={{background:'linear-gradient(135deg, rgba(212,160,23,0.06), rgba(192,57,43,0.06))'}}>
               <p className="text-4xl mb-3">♦</p>
               <p className="text-sm text-gray-500 leading-relaxed">
-                「伸縮自在の愛（バンジーガム）」にはゴムとガム両方の性質がある♠<br/>
-                <span className="text-gray-300 italic">— ヒソカ</span>
+                {t.abilityQuote}<br/>
+                <span className="text-gray-300 italic">{t.abilityQuoteBy}</span>
               </p>
             </div>
           </div>
@@ -453,31 +583,29 @@ function App() {
           <div className="animate-fade-in grid md:grid-cols-2 gap-6">
             <div className="hisoka-card rounded-2xl p-6">
               <h2 className="text-lg font-bold mb-6 flex items-center gap-2" style={{color:'#d4a017'}}>
-                <span>♥</span> 戦闘ステータス
+                <span>♥</span> {t.statsTitle}
               </h2>
               {STATS.map((s, i) => (
-                <StatBar key={s.label} {...s} delay={i * 150} />
+                <StatBar key={s.ja} label={s[lang]} value={s.value} icon={s.icon} delay={i * 150} />
               ))}
             </div>
 
             <div className="space-y-4">
-              {[
-                { label: '殺傷能力', grade: 'S', desc: '幻影旅団を単独で壊滅させうる実力', color: '#c0392b' },
-                { label: '念の習熟度', grade: 'S+', desc: 'バンジーガムで変化系トップクラス', color: '#d4a017' },
-                { label: '格闘技術', grade: 'S', desc: '近接・遠距離どちらも超一流', color: '#c0392b' },
-                { label: '精神的脅威度', grade: 'EX', desc: '読めない行動原理で相手を翻弄', color: '#8b5cf6' },
-              ].map((item, i) => (
-                <div key={i} className="hisoka-card rounded-xl p-4 flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl flex items-center justify-center font-black text-lg flex-shrink-0"
-                    style={{background:`${item.color}22`, color:item.color, border:`1px solid ${item.color}44`}}>
-                    {item.grade}
+              {GRADES.map((item, i) => {
+                const tr = item[lang];
+                return (
+                  <div key={i} className="hisoka-card rounded-xl p-4 flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl flex items-center justify-center font-black text-lg flex-shrink-0"
+                      style={{background:`${item.color}22`, color:item.color, border:`1px solid ${item.color}44`}}>
+                      {item.grade}
+                    </div>
+                    <div>
+                      <p className="font-bold text-sm text-gray-200">{tr.label}</p>
+                      <p className="text-xs text-gray-500 mt-0.5">{tr.desc}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-bold text-sm text-gray-200">{item.label}</p>
-                    <p className="text-xs text-gray-500 mt-0.5">{item.desc}</p>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
@@ -485,11 +613,11 @@ function App() {
         {/* Quotes */}
         {activeTab === 'quotes' && (
           <div className="animate-fade-in">
-            <QuoteCarousel />
+            <QuoteCarousel lang={lang} />
             <div className="mt-6 grid gap-4">
               {QUOTES.map((q, i) => (
                 <div key={i} className="hisoka-card rounded-xl p-5">
-                  <p className="text-gray-200 text-sm leading-relaxed font-jp">{q.ja}</p>
+                  <p className="text-gray-200 text-sm leading-relaxed font-jp">{lang === 'en' ? q.en : q.ja}</p>
                 </div>
               ))}
             </div>
@@ -502,40 +630,43 @@ function App() {
         <div className="text-center mb-10">
           <div className="inline-block mb-4 px-4 py-1 rounded-full border text-xs tracking-widest"
             style={{borderColor:'rgba(212,160,23,0.3)', color:'#d4a017', background:'rgba(212,160,23,0.05)'}}>
-            PHANTOM TROUPE — 幻影旅団
+            {t.troupeBadge}
           </div>
-          <h2 className="text-3xl md:text-4xl font-black gradient-text mb-2">旅団メンバー</h2>
-          <p className="text-sm text-gray-600">各メンバーのページへアクセス</p>
+          <h2 className="text-3xl md:text-4xl font-black gradient-text mb-2">{t.troupeTitle}</h2>
+          <p className="text-sm text-gray-600">{t.troupeSub}</p>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {[
-            { name: 'クロロ＝ルシルフル', num: 'No.0', role: '団長', file: 'chrollo', color: '#7c3aed' },
-            { name: 'ノブナガ＝ハザマ', num: 'No.1', role: '居合の達人', file: 'nobunaga', color: '#3b82f6' },
-            { name: 'フェイタン＝ポートオ', num: 'No.2', role: '拷問担当', file: 'feitan', color: '#dc2626' },
-            { name: 'マチ＝コマチネ', num: 'No.3', role: '念糸使い', file: 'machi', color: '#ec4899' },
-            { name: 'カルト＝ゾルディック', num: 'No.4', role: '暗殺者', file: 'kalluto', color: '#8b5cf6' },
-            { name: 'フィンクス＝マグカブ', num: 'No.5', role: 'パワータイプ', file: 'phinks', color: '#f59e0b' },
-            { name: 'シャルナーク', num: 'No.6 ✝', role: '情報担当', file: 'shalnark', color: '#10b981' },
-            { name: 'フランクリン＝ボルドー', num: 'No.7', role: '重火力', file: 'franklin', color: '#059669' },
-            { name: 'シズク＝ムラサキ', num: 'No.8', role: 'デメちゃん使い', file: 'shizuku', color: '#7c3aed' },
-            { name: 'パクノダ', num: 'No.9 ✝', role: '記憶読み', file: 'pakunoda', color: '#6366f1' },
-            { name: 'ボノレノフ＝ンドンゴ', num: 'No.10', role: '戦闘舞踊', file: 'bonolenov', color: '#92400e' },
-            { name: 'ウボォーギン', num: 'No.11 ✝', role: '最強の拳', file: 'uvogin', color: '#ea580c' },
-            { name: 'コルトピ＝トノフメイル', num: 'No.12 ✝', role: 'コピー能力', file: 'kortopi', color: '#6b7280' },
-          ].map((member, i) => (
-            <a key={i} href={member.file} className="hisoka-card rounded-xl p-4 block group cursor-pointer">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg flex items-center justify-center font-black text-xs flex-shrink-0"
-                  style={{background:`${member.color}22`, color: member.color, border:`1px solid ${member.color}44`}}>
-                  {member.num.replace(' ✝', '')}
+            { ja: { name: 'クロロ＝ルシルフル', role: '団長' }, en: { name: 'Chrollo Lucilfer', role: 'Leader' }, num: 'No.0', file: 'chrollo', color: '#7c3aed' },
+            { ja: { name: 'ノブナガ＝ハザマ', role: '居合の達人' }, en: { name: 'Nobunaga Hazama', role: 'Iaido Master' }, num: 'No.1', file: 'nobunaga', color: '#3b82f6' },
+            { ja: { name: 'フェイタン＝ポートオ', role: '拷問担当' }, en: { name: 'Feitan Portor', role: 'Torturer' }, num: 'No.2', file: 'feitan', color: '#dc2626' },
+            { ja: { name: 'マチ＝コマチネ', role: '念糸使い' }, en: { name: 'Machi Komacine', role: 'Nen Threads' }, num: 'No.3', file: 'machi', color: '#ec4899' },
+            { ja: { name: 'カルト＝ゾルディック', role: '暗殺者' }, en: { name: 'Kalluto Zoldyck', role: 'Assassin' }, num: 'No.4', file: 'kalluto', color: '#8b5cf6' },
+            { ja: { name: 'フィンクス＝マグカブ', role: 'パワータイプ' }, en: { name: 'Phinks Magcub', role: 'Power Type' }, num: 'No.5', file: 'phinks', color: '#f59e0b' },
+            { ja: { name: 'シャルナーク', role: '情報担当' }, en: { name: 'Shalnark', role: 'Information' }, num: 'No.6 ✝', file: 'shalnark', color: '#10b981' },
+            { ja: { name: 'フランクリン＝ボルドー', role: '重火力' }, en: { name: 'Franklin Bordeau', role: 'Heavy Firepower' }, num: 'No.7', file: 'franklin', color: '#059669' },
+            { ja: { name: 'シズク＝ムラサキ', role: 'デメちゃん使い' }, en: { name: 'Shizuku Murasaki', role: 'Blinky User' }, num: 'No.8', file: 'shizuku', color: '#7c3aed' },
+            { ja: { name: 'パクノダ', role: '記憶読み' }, en: { name: 'Pakunoda', role: 'Memory Reader' }, num: 'No.9 ✝', file: 'pakunoda', color: '#6366f1' },
+            { ja: { name: 'ボノレノフ＝ンドンゴ', role: '戦闘舞踊' }, en: { name: 'Bonolenov Ndongo', role: 'Battle Dancer' }, num: 'No.10', file: 'bonolenov', color: '#92400e' },
+            { ja: { name: 'ウボォーギン', role: '最強の拳' }, en: { name: 'Uvogin', role: 'Strongest Fist' }, num: 'No.11 ✝', file: 'uvogin', color: '#ea580c' },
+            { ja: { name: 'コルトピ＝トノフメイル', role: 'コピー能力' }, en: { name: 'Kortopi Tonofmail', role: 'Copy Ability' }, num: 'No.12 ✝', file: 'kortopi', color: '#6b7280' },
+          ].map((member, i) => {
+            const tr = member[lang];
+            return (
+              <a key={i} href={member.file} className="hisoka-card rounded-xl p-4 block group cursor-pointer">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center font-black text-xs flex-shrink-0"
+                    style={{background:`${member.color}22`, color: member.color, border:`1px solid ${member.color}44`}}>
+                    {member.num.replace(' ✝', '')}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-bold text-sm text-gray-200 truncate group-hover:text-white transition-colors">{tr.name}</p>
+                    <p className="text-xs text-gray-500">{tr.role}</p>
+                  </div>
                 </div>
-                <div className="min-w-0">
-                  <p className="font-bold text-sm text-gray-200 truncate group-hover:text-white transition-colors">{member.name}</p>
-                  <p className="text-xs text-gray-500">{member.role}</p>
-                </div>
-              </div>
-            </a>
-          ))}
+              </a>
+            );
+          })}
         </div>
       </div>
 
@@ -544,33 +675,36 @@ function App() {
         <div className="text-center mb-10">
           <div className="inline-block mb-4 px-4 py-1 rounded-full border text-xs tracking-widest"
             style={{borderColor:'rgba(22,163,74,0.3)', color:'#16a34a', background:'rgba(22,163,74,0.05)'}}>
-            MAIN CHARACTERS — 主要キャラクター
+            {t.mainBadge}
           </div>
-          <h2 className="text-3xl md:text-4xl font-black gradient-text mb-2">メインキャラ</h2>
-          <p className="text-sm text-gray-600">各キャラクターのページへアクセス</p>
+          <h2 className="text-3xl md:text-4xl font-black gradient-text mb-2">{t.mainTitle}</h2>
+          <p className="text-sm text-gray-600">{t.mainSub}</p>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {[
-            { name: 'ゴン＝フリークス', role: '主人公', file: 'gon', color: '#16a34a' },
-            { name: 'キルア＝ゾルディック', role: 'ゴンの親友', file: 'killua', color: '#3b82f6' },
-            { name: 'クラピカ', role: '復讐者', file: 'kurapika', color: '#dc2626' },
-            { name: 'レオリオ', role: '医学生ハンター', file: 'leorio', color: '#2563eb' },
-            { name: 'ヒソカ＝モロウ', role: '奇術師', file: 'hisoka', color: '#be185d' },
-            { name: 'ジン＝フリークス', role: '遺跡ハンター', file: 'ging', color: '#854d0e' },
-          ].map((ch, i) => (
-            <a key={i} href={ch.file} className="hisoka-card rounded-xl p-4 block group cursor-pointer">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg flex items-center justify-center font-black text-xs flex-shrink-0"
-                  style={{background:`${ch.color}22`, color: ch.color, border:`1px solid ${ch.color}44`}}>
-                  ★
+            { ja: { name: 'ゴン＝フリークス', role: '主人公' }, en: { name: 'Gon Freecss', role: 'Protagonist' }, file: 'gon', color: '#16a34a' },
+            { ja: { name: 'キルア＝ゾルディック', role: 'ゴンの親友' }, en: { name: 'Killua Zoldyck', role: "Gon's Best Friend" }, file: 'killua', color: '#3b82f6' },
+            { ja: { name: 'クラピカ', role: '復讐者' }, en: { name: 'Kurapika', role: 'Avenger' }, file: 'kurapika', color: '#dc2626' },
+            { ja: { name: 'レオリオ', role: '医学生ハンター' }, en: { name: 'Leorio', role: 'Medical Hunter' }, file: 'leorio', color: '#2563eb' },
+            { ja: { name: 'ヒソカ＝モロウ', role: '奇術師' }, en: { name: 'Hisoka Morow', role: 'Magician' }, file: 'hisoka', color: '#be185d' },
+            { ja: { name: 'ジン＝フリークス', role: '遺跡ハンター' }, en: { name: 'Ging Freecss', role: 'Ruin Hunter' }, file: 'ging', color: '#854d0e' },
+          ].map((ch, i) => {
+            const tr = ch[lang];
+            return (
+              <a key={i} href={ch.file} className="hisoka-card rounded-xl p-4 block group cursor-pointer">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center font-black text-xs flex-shrink-0"
+                    style={{background:`${ch.color}22`, color: ch.color, border:`1px solid ${ch.color}44`}}>
+                    ★
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-bold text-sm text-gray-200 truncate group-hover:text-white transition-colors">{tr.name}</p>
+                    <p className="text-xs text-gray-500">{tr.role}</p>
+                  </div>
                 </div>
-                <div className="min-w-0">
-                  <p className="font-bold text-sm text-gray-200 truncate group-hover:text-white transition-colors">{ch.name}</p>
-                  <p className="text-xs text-gray-500">{ch.role}</p>
-                </div>
-              </div>
-            </a>
-          ))}
+              </a>
+            );
+          })}
         </div>
       </div>
 
@@ -579,35 +713,38 @@ function App() {
         <div className="text-center mb-10">
           <div className="inline-block mb-4 px-4 py-1 rounded-full border text-xs tracking-widest"
             style={{borderColor:'rgba(107,33,168,0.3)', color:'#7c3aed', background:'rgba(107,33,168,0.05)'}}>
-            OTHER CHARACTERS — その他キャラクター
+            {t.otherBadge}
           </div>
-          <h2 className="text-3xl md:text-4xl font-black gradient-text mb-2">その他キャラ</h2>
+          <h2 className="text-3xl md:text-4xl font-black gradient-text mb-2">{t.otherTitle}</h2>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {[
-            { name: 'ネテロ会長', role: 'ハンター協会会長', file: 'netero', color: '#b45309' },
-            { name: 'メルエム', role: 'キメラアント王', file: 'meruem', color: '#4c1d95' },
-            { name: 'ネフェルピトー', role: '王直属護衛軍', file: 'pitou', color: '#7c3aed' },
-            { name: 'ビスケ', role: '二つ星ハンター', file: 'bisky', color: '#db2777' },
-            { name: 'コムギ', role: '軍儀世界王者', file: 'komugi', color: '#ca8a04' },
-            { name: 'モラウ', role: '海洋ハンター', file: 'morel', color: '#0e7490' },
-            { name: 'イルミ', role: 'ゾルディック家長男', file: 'illumi', color: '#1e293b' },
-            { name: 'ゼノ', role: 'ゾルディック家先代', file: 'zeno', color: '#6b21a8' },
-            { name: 'シルバ', role: 'ゾルディック家当主', file: 'silva', color: '#475569' },
-          ].map((ch, i) => (
-            <a key={i} href={ch.file} className="hisoka-card rounded-xl p-4 block group cursor-pointer">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg flex items-center justify-center font-black text-xs flex-shrink-0"
-                  style={{background:`${ch.color}22`, color: ch.color, border:`1px solid ${ch.color}44`}}>
-                  ◆
+            { ja: { name: 'ネテロ会長', role: 'ハンター協会会長' }, en: { name: 'Chairman Netero', role: 'Hunter Assoc. Chairman' }, file: 'netero', color: '#b45309' },
+            { ja: { name: 'メルエム', role: 'キメラアント王' }, en: { name: 'Meruem', role: 'Chimera Ant King' }, file: 'meruem', color: '#4c1d95' },
+            { ja: { name: 'ネフェルピトー', role: '王直属護衛軍' }, en: { name: 'Neferpitou', role: 'Royal Guard' }, file: 'pitou', color: '#7c3aed' },
+            { ja: { name: 'ビスケ', role: '二つ星ハンター' }, en: { name: 'Biscuit', role: 'Double-Star Hunter' }, file: 'bisky', color: '#db2777' },
+            { ja: { name: 'コムギ', role: '軍儀世界王者' }, en: { name: 'Komugi', role: 'Gungi World Champion' }, file: 'komugi', color: '#ca8a04' },
+            { ja: { name: 'モラウ', role: '海洋ハンター' }, en: { name: 'Morel', role: 'Sea Hunter' }, file: 'morel', color: '#0e7490' },
+            { ja: { name: 'イルミ', role: 'ゾルディック家長男' }, en: { name: 'Illumi', role: 'Eldest Zoldyck Son' }, file: 'illumi', color: '#1e293b' },
+            { ja: { name: 'ゼノ', role: 'ゾルディック家先代' }, en: { name: 'Zeno', role: 'Former Zoldyck Head' }, file: 'zeno', color: '#6b21a8' },
+            { ja: { name: 'シルバ', role: 'ゾルディック家当主' }, en: { name: 'Silva', role: 'Zoldyck Family Head' }, file: 'silva', color: '#475569' },
+          ].map((ch, i) => {
+            const tr = ch[lang];
+            return (
+              <a key={i} href={ch.file} className="hisoka-card rounded-xl p-4 block group cursor-pointer">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center font-black text-xs flex-shrink-0"
+                    style={{background:`${ch.color}22`, color: ch.color, border:`1px solid ${ch.color}44`}}>
+                    ◆
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-bold text-sm text-gray-200 truncate group-hover:text-white transition-colors">{tr.name}</p>
+                    <p className="text-xs text-gray-500">{tr.role}</p>
+                  </div>
                 </div>
-                <div className="min-w-0">
-                  <p className="font-bold text-sm text-gray-200 truncate group-hover:text-white transition-colors">{ch.name}</p>
-                  <p className="text-xs text-gray-500">{ch.role}</p>
-                </div>
-              </div>
-            </a>
-          ))}
+              </a>
+            );
+          })}
         </div>
       </div>
 
@@ -619,8 +756,8 @@ function App() {
       {/* Footer */}
       <footer className="relative z-10 text-center py-10 border-t" style={{borderColor:'rgba(255,255,255,0.05)'}}>
         <p className="text-2xl mb-2">♠ ♦ ♥ ♣</p>
-        <p className="text-xs text-gray-700">HUNTER × HUNTER © Yoshihiro Togashi / Shueisha</p>
-        <p className="text-xs text-gray-800 mt-1">Fan-made tribute page</p>
+        <p className="text-xs text-gray-700">{t.footerCopy}</p>
+        <p className="text-xs text-gray-800 mt-1">{t.footerSub}</p>
       </footer>
       </>
       )}
@@ -629,50 +766,52 @@ function App() {
         <div className="relative z-10 animate-fade-in">
           <div className="overflow-hidden" style={{background:'linear-gradient(180deg, #140a1f 0%, #0a0a0a 100%)'}}>
             <div className="max-w-4xl mx-auto px-6 py-20 text-center">
-              <p className="text-xs tracking-[0.3em] text-violet-300 mb-4">GENEI RYODAN</p>
+              <p className="text-xs tracking-[0.3em] text-violet-300 mb-4">{t.uvoginHeader}</p>
               <h1 className="text-5xl md:text-7xl font-black mb-4">
                 <span style={{color:'#c4b5fd'}}>UVOGIN</span>
               </h1>
-              <p className="text-xl text-gray-300">ウヴォーギン</p>
-              <p className="text-sm text-gray-500 mt-4">「力でねじ伏せる」旅団随一のパワーファイター</p>
+              <p className="text-xl text-gray-300">{t.uvoginName}</p>
+              <p className="text-sm text-gray-500 mt-4">{t.uvoginLead}</p>
             </div>
           </div>
 
           <div className="max-w-4xl mx-auto px-6 py-12 grid md:grid-cols-2 gap-6">
             <div className="hisoka-card rounded-2xl p-6">
-              <h2 className="text-lg font-bold mb-5 text-violet-300">基本プロフィール</h2>
+              <h2 className="text-lg font-bold mb-5 text-violet-300">{t.uvoginProfileTitle}</h2>
               <div className="space-y-3">
-                {UVOGIN_PROFILE.map(({ label, value }) => (
-                  <div key={label} className="flex justify-between items-center py-2"
-                    style={{borderBottom:'1px solid rgba(255,255,255,0.05)'}}>
-                    <span className="text-xs text-gray-500 tracking-wider">{label}</span>
-                    <span className="text-sm text-gray-200 font-medium">{value}</span>
-                  </div>
-                ))}
+                {UVOGIN_PROFILE.map((row) => {
+                  const { label, value } = row[lang];
+                  return (
+                    <div key={label} className="flex justify-between items-center py-2"
+                      style={{borderBottom:'1px solid rgba(255,255,255,0.05)'}}>
+                      <span className="text-xs text-gray-500 tracking-wider">{label}</span>
+                      <span className="text-sm text-gray-200 font-medium">{value}</span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
             <div className="hisoka-card rounded-2xl p-6">
-              <h2 className="text-lg font-bold mb-5 text-violet-300">必殺技</h2>
-              <h3 className="text-2xl font-black text-gray-100 mb-2">超破壊拳（ビッグバンインパクト）</h3>
+              <h2 className="text-lg font-bold mb-5 text-violet-300">{t.uvoginSkillTitle}</h2>
+              <h3 className="text-2xl font-black text-gray-100 mb-2">{t.uvoginSkillName}</h3>
               <p className="text-sm text-gray-400 leading-relaxed">
-                強化した拳による一点突破の超威力攻撃。クレーターを生むほどの破壊力を持ち、
-                シンプルながら「強化系」の真髄を体現する技として描かれる。
+                {t.uvoginSkillDesc}
               </p>
             </div>
 
             <div className="hisoka-card rounded-2xl p-6">
-              <h2 className="text-lg font-bold mb-6 text-violet-300">戦闘ステータス</h2>
+              <h2 className="text-lg font-bold mb-6 text-violet-300">{t.uvoginStatsTitle}</h2>
               {UVOGIN_STATS.map((s, i) => (
-                <StatBar key={s.label} {...s} delay={i * 120} />
+                <StatBar key={s.ja} label={s[lang]} value={s.value} icon={s.icon} delay={i * 120} />
               ))}
             </div>
 
             <div className="hisoka-card rounded-2xl p-6">
-              <h2 className="text-lg font-bold mb-5 text-violet-300">名言</h2>
+              <h2 className="text-lg font-bold mb-5 text-violet-300">{t.uvoginQuotesTitle}</h2>
               <div className="space-y-3">
                 {UVOGIN_QUOTES.map((q, i) => (
-                  <p key={i} className="text-sm text-gray-300 border-l-2 border-violet-400/50 pl-3">{q}</p>
+                  <p key={i} className="text-sm text-gray-300 border-l-2 border-violet-400/50 pl-3">{lang === 'en' ? q.en : q.ja}</p>
                 ))}
               </div>
             </div>
